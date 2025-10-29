@@ -1,127 +1,265 @@
-# Hotel System
+# 🏨 Hotel System - Sistema de Gestión Hotelera
 
-Proyecto React + Vite + Tailwind + Lucide 
+Sistema completo de gestión hotelera con Frontend (React + Vite + Tailwind) y Backend (Node.js + Express + MongoDB).
 
-### Comandos
-- `npm install` — instalar dependencias
-- `npm run dev` — levantar servidor de desarrollo (Vite)
-- `npm run build` — construir para producción
-- `npm run preview` — vista previa de la build
+## ✨ Características
 
+### Backend API (Node.js + Express + MongoDB)
+- ✅ **Autenticación JWT** - Sistema seguro de login con tokens
+- ✅ **CRUD Completo de Habitaciones** - Gestión total de habitaciones
+- ✅ **CRUD Completo de Reservas** - Reservas con validación de disponibilidad
+- ✅ **Gestión de Usuarios** - Roles (Admin/Empleado) y permisos
+- ✅ **Validaciones** - Validación de datos con express-validator
+- ✅ **Cálculo Automático** - Precios calculados según estancia
+- ✅ **Control de Estados** - Estados de habitaciones y reservas
 
-🔑 Credenciales de prueba
-Rol	Usuario	Contraseña
-Administrador	admin	admin123
-Empleado	empleado	emp123
+### Frontend (React 18 + Vite + Tailwind CSS)
+- ✅ **Módulo de Reservas** - Crear, editar, eliminar reservas
+- ✅ **Módulo de Habitaciones** - Gestión completa con filtros
+- ✅ **Dashboard Visual** - Estadísticas en tiempo real
+- ✅ **Diseño Responsive** - Funciona en móvil, tablet y desktop
+- ✅ **Filtros Avanzados** - Búsqueda por estado, tipo, piso
+- ✅ **Interfaz Moderna** - UI/UX profesional con Tailwind
+- ✅ **Gestión de Estados** - React Context + useState
 
-🧠 Conceptos implementados
+## 🚀 Inicio Rápido
 
-Autenticación simulada con usuarios en memoria.
+### Requisitos
+- Node.js v16+
+- MongoDB instalado y corriendo
 
-Componentes reutilizables para formularios y botones.
+### Instalación
 
-Uso de Lucide React para íconos interactivos.
-
-Diseño responsive con utilidades Tailwind.
-
-Ruteo interno basado en componentes.
-
-🏨 Hotel System
-
-Sistema web para la gestión de un hotel, desarrollado con React + Vite.
-Permite el manejo de autenticación, administración de usuarios, reservas y visualización de datos desde una interfaz moderna y responsiva.
-
-⚙️ Estructura del Proyecto
-
-El proyecto está organizado siguiendo una arquitectura cliente-servidor, aunque en esta versión inicial solo se implementa el frontend, con un backend simulado dentro del código.
-
-🖥️ Frontend
-
-Desarrollado con React, Vite y TailwindCSS.
-
-📁 Carpetas principales
-Carpeta	Descripción
-src/components/	Componentes reutilizables de la interfaz (botones, formularios, tarjetas, etc.)
-src/pages/	Vistas principales del sistema (Login, Dashboard, Reservas, etc.)
-src/context/	Manejo del estado global (Context API) para sesión y datos compartidos
-src/constants/	Datos simulados del backend (usuarios, configuración, reservas)
-src/utils/	Funciones auxiliares y utilidades comunes
-src/App.jsx	Estructura principal de la aplicación y enrutamiento
-src/main.jsx	Punto de entrada del proyecto
-
-🧠 Funcionalidades actuales
-
-Autenticación de usuarios (administrador y empleado)
-
-Gestión visual de reservas
-
-Simulación de estados globales (sesión activa, datos de usuario)
-
-Interfaz responsiva con diseño moderno
-
-🗄️ Backend (Simulado)
-
-Por ahora, el backend está simulado en memoria dentro del mismo frontend.
-Los datos se almacenan en archivos JS bajo src/constants/ y se manejan mediante Context API.
-
-No existe aún conexión real a base de datos ni API REST.
-En la siguiente etapa, se implementará un backend real con:
-
-Node.js + Express
-
-Base de datos: MySQL o MongoDB
-
-Endpoints REST para manejar usuarios, reservas y autenticación
-
-🧩 Tecnologías utilizadas
-Tecnología	Uso
-React	Framework para la interfaz de usuario
-Vite	Entorno de desarrollo rápido y eficiente
-TailwindCSS	Estilos CSS utilitarios
-Context API	Manejo de estado global
-JavaScript (ES6)	Lógica del sistema
-npm	Gestión de dependencias
-🚀 Instalación y ejecución
-
-Clonar el repositorio:
-
-git clone https://github.com/tu-usuario/Hotel_system.git
-cd Hotel_system
-
-
-Instalar dependencias:
-
+```bash
+# 1. Instalar dependencias del backend
+cd backend
 npm install
 
+# 2. Instalar dependencias del frontend
+cd ..
+npm install
+```
 
-Iniciar el servidor de desarrollo:
+### Ejecución
 
+#### Opción 1: Script automático (Windows)
+```powershell
+.\start.ps1
+```
+
+#### Opción 2: Manual
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
 npm run dev
+```
 
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
 
-Abrir en el navegador:
+### Crear Usuario y Datos
 
-http://localhost:5173/
+**1. Crear usuario administrador:**
+```powershell
+.\create-admin.ps1
+```
 
-🧱 Estructura futura (con backend real)
+**2. Crear habitaciones de ejemplo:**
+```powershell
+.\create-rooms.ps1
+```
+
+### Acceder
+- **Frontend:** http://localhost:5173
+- **Backend API:** http://localhost:5000
+- **Credenciales:** admin / admin123
+
+## 📁 Estructura del Proyecto
+
+```
 Hotel_system/
-├── backend/
-│   ├── server.js
-│   ├── routes/
-│   ├── controllers/
-│   ├── models/
-│   └── package.json
-└── frontend/
-    ├── src/
-    └── ...
+├── backend/                    # Backend API
+│   ├── config/                # Configuración de base de datos
+│   ├── controllers/           # Lógica de negocio
+│   │   ├── auth.controller.js
+│   │   ├── room.controller.js
+│   │   ├── reservation.controller.js
+│   │   └── user.controller.js
+│   ├── models/                # Modelos de MongoDB
+│   │   ├── User.model.js
+│   │   ├── Room.model.js
+│   │   └── Reservation.model.js
+│   ├── routes/                # Rutas de la API
+│   │   ├── auth.routes.js
+│   │   ├── room.routes.js
+│   │   ├── reservation.routes.js
+│   │   └── user.routes.js
+│   ├── middleware/            # Middlewares de autenticación
+│   └── server.js              # Servidor Express
+│
+├── src/                       # Frontend React
+│   ├── components/           # Componentes reutilizables
+│   │   ├── Button.jsx
+│   │   ├── Header.jsx
+│   │   ├── Navigation.jsx
+│   │   ├── RoomCard.jsx
+│   │   ├── RoomModal.jsx
+│   │   ├── ReservationRow.jsx
+│   │   └── ...
+│   ├── pages/                # Páginas principales
+│   │   ├── RoomsPage.jsx
+│   │   └── ReservationsPage.jsx
+│   ├── services/             # Cliente API
+│   │   └── api.js
+│   ├── context/              # Context API
+│   └── utils/                # Utilidades
+│
+├── SETUP.md                  # Guía detallada de instalación
+├── start.ps1                 # Script de inicio automático
+├── create-admin.ps1          # Crear usuario admin
+└── create-rooms.ps1          # Crear habitaciones de prueba
+```
 
-📌 Estado del proyecto
+## 🎯 Módulos Implementados
 
-🚧 Versión actual: Desarrollo del frontend funcional con backend simulado.
-🧩 Próximos pasos:
+### 1. 🔐 Autenticación
+- Login con JWT
+- Registro de usuarios
+- Roles y permisos (Admin/Empleado)
+- Protección de rutas
 
-Implementar API REST con Node.js y Express.
+### 2. 🏨 Gestión de Habitaciones
+- Crear/Editar/Eliminar habitaciones (Admin)
+- Filtros por estado, tipo y piso
+- Estados: Disponible, Ocupada, Limpieza, Mantenimiento
+- Tipos: Simple, Doble, Suite, Familiar
+- Servicios y amenidades
+- Estadísticas visuales
 
-Conectar base de datos (MySQL/MongoDB).
+### 3. 📅 Gestión de Reservas
+- Crear/Editar/Eliminar reservas
+- Validación de disponibilidad
+- Cálculo automático de precios
+- Estados: Pendiente, Confirmada, En curso, Completada, Cancelada
+- Información de huéspedes
+- Vista de calendario
 
-Añadir autenticación JWT y control de roles.
+## 🔧 API Endpoints
+
+### Autenticación
+```
+POST   /api/auth/login       - Iniciar sesión
+POST   /api/auth/register    - Registrar usuario
+GET    /api/auth/me          - Obtener usuario actual
+```
+
+### Habitaciones
+```
+GET    /api/rooms            - Listar habitaciones
+GET    /api/rooms/:id        - Obtener habitación
+POST   /api/rooms            - Crear habitación (Admin)
+PUT    /api/rooms/:id        - Actualizar habitación (Admin)
+DELETE /api/rooms/:id        - Eliminar habitación (Admin)
+PATCH  /api/rooms/:id/status - Actualizar estado
+```
+
+### Reservas
+```
+GET    /api/reservations           - Listar reservas
+GET    /api/reservations/:id       - Obtener reserva
+POST   /api/reservations           - Crear reserva
+PUT    /api/reservations/:id       - Actualizar reserva
+DELETE /api/reservations/:id       - Eliminar reserva (Admin)
+PATCH  /api/reservations/:id/status - Actualizar estado
+```
+
+## 🛠️ Tecnologías
+
+### Backend
+- **Node.js** - Runtime de JavaScript
+- **Express** - Framework web
+- **MongoDB** - Base de datos NoSQL
+- **Mongoose** - ODM para MongoDB
+- **JWT** - Autenticación con tokens
+- **bcryptjs** - Encriptación de contraseñas
+- **express-validator** - Validación de datos
+
+### Frontend
+- **React 18** - Librería UI
+- **Vite** - Build tool
+- **Tailwind CSS** - Framework CSS
+- **Axios** - Cliente HTTP
+- **Lucide React** - Iconos
+- **Context API** - Gestión de estado
+
+## 📚 Documentación Adicional
+
+- [SETUP.md](./SETUP.md) - Guía detallada de instalación
+- [backend/README.md](./backend/README.md) - Documentación del API
+
+## 🎨 Capturas de Pantalla
+
+### Módulo de Habitaciones
+- Vista en grid con cards
+- Filtros por estado, tipo y piso
+- Estadísticas visuales
+- Gestión completa (CRUD)
+
+### Módulo de Reservas
+- Tabla de reservas
+- Calendario visual
+- Formulario completo
+- Validación de disponibilidad
+
+## 🚧 Próximas Funcionalidades
+
+- [ ] Dashboard con gráficas estadísticas
+- [ ] Módulo de Huéspedes completo
+- [ ] Sistema de reportes en PDF
+- [ ] Integración de pagos
+- [ ] Check-in/Check-out con QR
+- [ ] Notificaciones en tiempo real (WebSockets)
+- [ ] Chat interno
+- [ ] Sistema de inventarios
+- [ ] Gestión de servicios adicionales
+
+## 📝 Comandos Útiles
+
+```bash
+# Desarrollo
+npm run dev              # Frontend en modo desarrollo
+cd backend && npm run dev # Backend en modo desarrollo
+
+# Producción
+npm run build            # Compilar frontend
+npm run preview          # Vista previa de producción
+```
+
+## 🐛 Solución de Problemas
+
+Ver [SETUP.md](./SETUP.md) para soluciones a problemas comunes.
+
+## 👥 Roles y Permisos
+
+### Administrador
+- Acceso total a todas las funcionalidades
+- Crear/Editar/Eliminar habitaciones
+- Crear/Editar/Eliminar reservas
+- Gestión de usuarios
+
+### Empleado
+- Ver todas las habitaciones
+- Crear y editar reservas
+- Actualizar estados
+- No puede eliminar
+
+## 📄 Licencia
+
+Este proyecto es de código abierto para fines educativos.
+
+---
+
+**Desarrollado con ❤️ para mostrar avances del proyecto**
