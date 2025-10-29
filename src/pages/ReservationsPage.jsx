@@ -1,39 +1,83 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { INITIAL_RESERVATIONS } from '../constants/data'
+import { reservationsAPI, roomsAPI } from '../services/api'
 import CalendarView from '../components/CalendarView'
 import ReservationsTable from '../components/ReservationsTable'
 import NewReservationModal from '../components/NewReservationModal'
 import Button from '../components/Button'
+import { Loader } from 'lucide-react'
 
 const ReservationsPage = () => {
   const { user } = useAuth();
-  const [reservations, setReservations] = useState(INITIAL_RESERVATIONS);
+  const [reservations, setReservations] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleCreateReservation = (newReservation) => {
-    const reservation = {
-      id: reservations.length + 1,
-      ...newReservation
-    };
-    setReservations([...reservations, reservation]);
-    setShowModal(false);
-  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const handleDeleteReservation = (id) => {
-    if (user.role === 'admin') {
-      setReservations(reservations.filter(r => r.id !== id));
-    } else {
-      alert('Solo los administradores pueden eliminar reservas');
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [reservationsRes, roomsRes] = await Promise.all([
+        reservationsAPI.getAll(),
+        roomsAPI.getAll()
+      ]);
+      setReservations(reservationsRes.data);
+      setRooms(roomsRes.data);
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+      alert('Error al cargar los datos');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setReservations(reservations.map(r => 
-      r.id === id ? { ...r, status: newStatus } : r
-    ));
+  const handleCreateReservation = async (newReservation) => {
+    try {
+      await reservationsAPI.create(newReservation);
+      await fetchData();
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error al crear reserva:', error);
+      const message = error.response?.data?.message || 'Error al crear la reserva';
+      alert(message);
+    }
   };
+
+  const handleDeleteReservation = async (id) => {
+    if (!window.confirm('¿Estás seguro de eliminar esta reserva?')) return;
+
+    try {
+      await reservationsAPI.delete(id);
+      await fetchData();
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      const message = error.response?.data?.message || 'Error al eliminar la reserva';
+      alert(message);
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await reservationsAPI.updateStatus(id, newStatus);
+      await fetchData();
+    } catch (error) {
+      console.error('Error al actualizar estado:', error);
+      alert('Error al actualizar el estado');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -61,6 +105,7 @@ const ReservationsPage = () => {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleCreateReservation}
+        rooms={rooms}
       />
     </div>
   );

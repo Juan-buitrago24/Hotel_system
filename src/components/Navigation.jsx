@@ -1,12 +1,12 @@
 import React from 'react'
-import { Calendar, Users, LayoutDashboard, Package } from 'lucide-react'
+import { Calendar, Users, LayoutDashboard, Bed } from 'lucide-react'
 
 const Navigation = ({ activeView, onViewChange }) => {
   const navItems = [
     { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true },
+    { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true },
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: false },
-    { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false },
-    { id: 'inventory', label: 'Inventario', icon: Package, enabled: false }
+    { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false }
   ];
 
   return (
