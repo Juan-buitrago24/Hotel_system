@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Cuenta - Hotel System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔐 Verificar Cuenta</h1>
+        <p class="subtitle">Ingresa el token de verificación que recibiste</p>
+
+        <div class="info">
+            <strong>📝 Instrucciones:</strong><br>
+            1. Revisa la consola del backend (terminal)<br>
+            2. Busca: "Token de verificación para [email]: ..."<br>
+            3. Copia el token y pégalo abajo<br>
+            <br>
+            <strong>O usa la URL directa:</strong><br>
+            <code>http://localhost:5174/verify/[TOKEN]</code>
+        </div>
+
+        <label for="token"><strong>Token de Verificación:</strong></label>
+        <input 
+            type="text" 
+            id="token" 
+            placeholder="Pega el token aquí"
+        >
+
+        <button onclick="verifyAccount()" id="verifyBtn">
+            Verificar Cuenta
+        </button>
+
+        <button onclick="goToApp()" style="background: #6c757d; margin-top: 10px;">
+            Ir a la Aplicación
+        </button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function verifyAccount() {
+            const token = document.getElementById('token').value.trim();
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('verifyBtn');
+
+            if (!token) {
+                showResult('Por favor ingresa un token', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/auth/verify/${token}`, {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult('✅ ' + data.message + ' ¡Ahora puedes iniciar sesión!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'http://localhost:5174/';
+                    }, 3000);
+                } else {
+                    showResult('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showResult('❌ Error de conexión: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Verificar Cuenta';
+            }
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = 'result ' + type;
+            resultDiv.style.display = 'block';
+        }
+
+        function goToApp() {
+            window.location.href = 'http://localhost:5174/';
+        }
+
+        // Auto-verificar si hay token en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+        if (tokenFromUrl) {
+            document.getElementById('token').value = tokenFromUrl;
+            verifyAccount();
+        }
+
+        // Permitir Enter para verificar
+        document.getElementById('token').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                verifyAccount();
+            }
+        });
+    </script>
+</body>
+</html>

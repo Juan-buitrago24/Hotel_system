@@ -4,7 +4,7 @@ import InputField from './InputField'
 import Button from './Button'
 import { authAPI } from '../services/api'
 
-const LoginPage = ({ onLogin }) => {
+const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword }) => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
 
@@ -78,12 +78,30 @@ const LoginPage = ({ onLogin }) => {
               'Iniciar Sesión'
             )}
           </Button>
+
+          {/* Enlaces adicionales */}
+          <div className="flex flex-col gap-2 text-center text-sm">
+            <button
+              onClick={onShowForgotPassword}
+              className="text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              ¿Olvidaste tu contraseña?
+            </button>
+            <div className="text-gray-600">
+              ¿No tienes cuenta?{' '}
+              <button
+                onClick={onShowRegister}
+                className="text-blue-600 hover:text-blue-700 hover:underline font-semibold"
+              >
+                Regístrate aquí
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <p className="text-xs text-gray-600 font-semibold mb-2">💡 Nota:</p>
           <p className="text-xs text-gray-600">Asegúrate de que el backend esté corriendo en el puerto 5000</p>
-          <p className="text-xs text-gray-600 mt-2">Crea un usuario con: POST /api/auth/register</p>
         </div>
       </div>
     </div>

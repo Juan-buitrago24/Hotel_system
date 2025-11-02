@@ -17,6 +17,16 @@ npm install
    - `JWT_SECRET`: Clave secreta para JWT
    - `NODE_ENV`: Entorno (development/production)
 
+### Ejemplo de `.env` (útil para desarrollo)
+
+```
+PORT=5000
+# URL de MongoDB local (si no existe, el servidor intentará conectar a mongodb://127.0.0.1:27017/hotel)
+MONGODB_URI=mongodb://127.0.0.1:27017/hotel
+JWT_SECRET=mi_clave_secreta
+NODE_ENV=development
+```
+
 2. Asegúrate de tener MongoDB instalado y corriendo localmente, o usa MongoDB Atlas.
 
 ## 🏃‍♂️ Ejecución
