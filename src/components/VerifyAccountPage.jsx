@@ -10,14 +10,21 @@ const VerifyAccountPage = ({ token, onSuccess, onBackToLogin }) => {
 
   useEffect(() => {
     const verifyAccount = async () => {
+      console.log('🔍 Intentando verificar cuenta...');
+      console.log('📝 Token recibido en componente:', token);
+      console.log('📝 Longitud del token:', token?.length);
+      
       if (!token) {
+        console.error('❌ Token no encontrado');
         setError('Token de verificación no encontrado');
         setLoading(false);
         return;
       }
 
       try {
+        console.log('📤 Enviando solicitud de verificación...');
         await authAPI.verifyAccount(token);
+        console.log('✅ Verificación exitosa');
         setSuccess(true);
         
         // Redirigir al login después de 3 segundos

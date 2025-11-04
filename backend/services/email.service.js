@@ -12,7 +12,7 @@ const getResend = () => {
 };
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5174';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 /**
  * Enviar email de verificación de cuenta
@@ -21,6 +21,15 @@ export const sendVerificationEmail = async (email, token, userName) => {
   try {
     const resend = getResend();
     const verificationUrl = `${FRONTEND_URL}/verify/${token}`;
+    
+    // En desarrollo, siempre mostrar el enlace en consola
+    if (process.env.NODE_ENV === 'development') {
+      console.log('\n🔗 ENLACE DE VERIFICACIÓN DE CUENTA:');
+      console.log('📧 Email destino:', email);
+      console.log('👤 Usuario:', userName);
+      console.log('🌐 URL:', verificationUrl);
+      console.log('⏰ Expira en: 24 horas\n');
+    }
     
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,
@@ -92,6 +101,13 @@ export const sendVerificationEmail = async (email, token, userName) => {
 
     if (error) {
       console.error('❌ Error al enviar email de verificación:', error);
+      
+      // En desarrollo, no lanzar error si Resend falla
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️  Email no enviado, pero puedes usar el enlace mostrado arriba');
+        return { id: 'dev-mode', warning: 'Email not sent in dev mode' };
+      }
+      
       throw error;
     }
 
@@ -99,6 +115,13 @@ export const sendVerificationEmail = async (email, token, userName) => {
     return data;
   } catch (error) {
     console.error('❌ Error en sendVerificationEmail:', error);
+    
+    // En desarrollo, no lanzar error fatal
+    if (process.env.NODE_ENV === 'development') {
+      console.log('⚠️  Modo desarrollo: continuando sin enviar email');
+      return { id: 'dev-mode-error', warning: 'Email not sent in dev mode' };
+    }
+    
     throw error;
   }
 };
@@ -110,6 +133,15 @@ export const sendPasswordResetEmail = async (email, token, userName) => {
   try {
     const resend = getResend();
     const resetUrl = `${FRONTEND_URL}/reset-password/${token}`;
+    
+    // En desarrollo, siempre mostrar el enlace en consola
+    if (process.env.NODE_ENV === 'development') {
+      console.log('\n🔗 ENLACE DE RECUPERACIÓN DE CONTRASEÑA:');
+      console.log('📧 Email destino:', email);
+      console.log('👤 Usuario:', userName);
+      console.log('🌐 URL:', resetUrl);
+      console.log('⏰ Expira en: 1 hora\n');
+    }
     
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,
@@ -189,6 +221,13 @@ export const sendPasswordResetEmail = async (email, token, userName) => {
 
     if (error) {
       console.error('❌ Error al enviar email de recuperación:', error);
+      
+      // En desarrollo, no lanzar error si Resend falla (ya mostramos el enlace en consola)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️  Email no enviado, pero puedes usar el enlace mostrado arriba');
+        return { id: 'dev-mode', warning: 'Email not sent in dev mode' };
+      }
+      
       throw error;
     }
 
@@ -196,6 +235,13 @@ export const sendPasswordResetEmail = async (email, token, userName) => {
     return data;
   } catch (error) {
     console.error('❌ Error en sendPasswordResetEmail:', error);
+    
+    // En desarrollo, no lanzar error fatal
+    if (process.env.NODE_ENV === 'development') {
+      console.log('⚠️  Modo desarrollo: continuando sin enviar email');
+      return { id: 'dev-mode-error', warning: 'Email not sent in dev mode' };
+    }
+    
     throw error;
   }
 };

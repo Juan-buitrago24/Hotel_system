@@ -3,9 +3,9 @@ import { Calendar, Users, LayoutDashboard, Bed } from 'lucide-react'
 
 const Navigation = ({ activeView, onViewChange }) => {
   const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: true },
     { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true },
     { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true },
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: false },
     { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false }
   ];
 

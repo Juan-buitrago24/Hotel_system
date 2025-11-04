@@ -40,7 +40,8 @@ export const login = async (req, res) => {
         username: user.username,
         name: user.name,
         role: user.role,
-        email: user.email
+        email: user.email,
+        verified: user.verified || false
       }
     });
   } catch (error) {
@@ -193,16 +194,47 @@ export const verifyAccount = async (req, res) => {
   try {
     const { token } = req.params;
     
+    console.log('\n' + '='.repeat(80));
+    console.log('🔍 VERIFICACIÓN DE CUENTA');
+    console.log('='.repeat(80));
+    console.log('📝 Token recibido:', token);
+    console.log('📝 Longitud del token:', token?.length);
+    
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    console.log('🔐 Token hasheado:', hashedToken);
     
     const user = await User.findOne({
       verificationToken: hashedToken,
       verificationTokenExpires: { $gt: Date.now() }
     });
 
+    console.log('👤 Usuario encontrado:', user ? `${user.username} (${user.email})` : 'NO ENCONTRADO');
+    
     if (!user) {
+      // Intentar buscar el usuario con este token sin importar expiración
+      const expiredUser = await User.findOne({ verificationToken: hashedToken });
+      if (expiredUser) {
+        console.log('⚠️  Token encontrado pero EXPIRADO');
+        console.log('⏰ Expiró en:', expiredUser.verificationTokenExpires);
+        console.log('⏰ Ahora es:', new Date());
+      } else {
+        console.log('❌ Token no existe en la base de datos');
+        // Buscar cualquier usuario con token de verificación pendiente
+        const usersWithToken = await User.find({ verificationToken: { $exists: true } }).select('username email verificationToken verificationTokenExpires');
+        console.log('📋 Usuarios con token pendiente:', usersWithToken.length);
+        if (usersWithToken.length > 0) {
+          console.log('Tokens en BD:');
+          usersWithToken.forEach(u => {
+            console.log(`  - ${u.username}: ${u.verificationToken} (expira: ${u.verificationTokenExpires})`);
+          });
+        }
+      }
+      console.log('='.repeat(80) + '\n');
       return res.status(400).json({ message: 'Token de verificación inválido o expirado' });
     }
+    
+    console.log('✅ Verificación exitosa');
+    console.log('='.repeat(80) + '\n');
 
     user.verified = true;
     user.verificationToken = undefined;
@@ -237,21 +269,37 @@ export const forgotPassword = async (req, res) => {
     const resetToken = user.createPasswordResetToken();
     await user.save();
 
+    // En desarrollo, SIEMPRE mostrar el enlace en consola
+    if (process.env.NODE_ENV === 'development') {
+      console.log('\n' + '='.repeat(80));
+      console.log('🔑 RECUPERACIÓN DE CONTRASEÑA - MODO DESARROLLO');
+      console.log('='.repeat(80));
+      console.log('📧 Email:', email);
+      console.log('👤 Usuario:', user.name || user.username);
+      console.log('🔐 Token:', resetToken);
+      console.log('🌐 URL completa:', `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`);
+      console.log('⏰ Expira en: 1 hora');
+      console.log('='.repeat(80) + '\n');
+    }
+
     // Enviar email de recuperación con Resend
     try {
       await sendPasswordResetEmail(email, resetToken, user.name || user.username);
       console.log(`✅ Email de recuperación enviado a ${email}`);
     } catch (emailError) {
-      console.error('❌ Error al enviar email de recuperación:', emailError);
-      // Mostrar token en consola como fallback
-      console.log(`⚠️ Token de reset (fallback) para ${email}: ${resetToken}`);
-      console.log(`⚠️ URL: ${process.env.FRONTEND_URL || 'http://localhost:5174'}/reset-password/${resetToken}`);
+      console.error('❌ Error al enviar email de recuperación:', emailError.message);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️  NOTA: Usa el enlace mostrado arriba en la consola\n');
+      }
     }
 
     res.json({ 
       message: 'Si el email existe, recibirás instrucciones para resetear tu contraseña',
-      // Solo en desarrollo - remover en producción
-      ...(process.env.NODE_ENV === 'development' && { resetToken })
+      // Solo en desarrollo - devolver token y URL
+      ...(process.env.NODE_ENV === 'development' && { 
+        resetToken,
+        resetUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`
+      })
     });
   } catch (error) {
     console.error(error);

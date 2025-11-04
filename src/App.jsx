@@ -8,12 +8,13 @@ import VerifyAccountPage from './components/VerifyAccountPage'
 import ProfilePage from './components/ProfilePage'
 import Header from './components/Header'
 import Navigation from './components/Navigation'
+import DashboardPage from './pages/DashboardPage'
 import ReservationsPage from './pages/ReservationsPage'
 import RoomsPage from './pages/RoomsPage'
 
 const HotelManagementApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [currentView, setCurrentView] = useState('reservations');
+  const [currentView, setCurrentView] = useState('dashboard');
   const [authView, setAuthView] = useState('login'); // 'login', 'register', 'forgot-password', 'reset-password', 'verify-account'
   const [resetToken, setResetToken] = useState('');
   const [verifyToken, setVerifyToken] = useState('');
@@ -130,6 +131,7 @@ const HotelManagementApp = () => {
         />
         <Navigation activeView={currentView} onViewChange={setCurrentView} />
         <main className="max-w-7xl mx-auto p-4 lg:p-6">
+          {currentView === 'dashboard' && <DashboardPage />}
           {currentView === 'reservations' && <ReservationsPage />}
           {currentView === 'rooms' && <RoomsPage />}
         </main>

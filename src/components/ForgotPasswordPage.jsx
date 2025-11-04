@@ -53,25 +53,34 @@ const ForgotPasswordPage = ({ onBackToLogin }) => {
             </p>
 
             {resetToken && (
-              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-left">
-                <p className="text-sm font-semibold text-yellow-800 mb-2">
-                  🔧 Modo Desarrollo:
+              <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-300 rounded-lg text-left">
+                <p className="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
+                  🔧 MODO DESARROLLO
                 </p>
-                <p className="text-xs text-yellow-700 mb-2">
-                  Token de reset (copia y úsalo en la siguiente página):
+                <p className="text-xs text-blue-700 mb-3">
+                  Como estás en desarrollo, aquí está el enlace directo:
                 </p>
-                <code className="block p-2 bg-yellow-100 rounded text-xs break-all">
-                  {resetToken}
-                </code>
-                <p className="text-xs text-yellow-700 mt-2">
-                  O usa este enlace:
-                </p>
-                <a 
-                  href={`/reset-password/${resetToken}`}
-                  className="text-xs text-blue-600 hover:underline break-all"
+                <button
+                  onClick={() => window.location.href = `/reset-password/${resetToken}`}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors mb-2"
                 >
-                  /reset-password/{resetToken}
-                </a>
+                  🔑 Ir a Restablecer Contraseña
+                </button>
+                <details className="mt-3">
+                  <summary className="text-xs text-blue-700 cursor-pointer hover:text-blue-900">
+                    Ver detalles técnicos
+                  </summary>
+                  <div className="mt-2 p-2 bg-white rounded">
+                    <p className="text-xs text-gray-600 mb-1">Token:</p>
+                    <code className="block p-2 bg-gray-100 rounded text-xs break-all font-mono">
+                      {resetToken}
+                    </code>
+                    <p className="text-xs text-gray-600 mt-2 mb-1">URL completa:</p>
+                    <code className="block p-2 bg-gray-100 rounded text-xs break-all font-mono">
+                      {window.location.origin}/reset-password/{resetToken}
+                    </code>
+                  </div>
+                </details>
               </div>
             )}
 

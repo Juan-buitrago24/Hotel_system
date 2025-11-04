@@ -27,7 +27,7 @@ Edita el archivo `backend/.env` y actualiza estas variables:
 # Resend Email Configuration
 RESEND_API_KEY=re_tu_api_key_real_aqui
 EMAIL_FROM=Hotel System <onboarding@resend.dev>
-FRONTEND_URL=http://localhost:5174
+FRONTEND_URL=http://localhost:5173
 ```
 
 **Importante:**

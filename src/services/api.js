@@ -42,7 +42,12 @@ export const authAPI = {
   register: (userData) => api.post('/auth/register', userData),
   getMe: () => api.get('/auth/me'),
   updateProfile: (profileData) => api.put('/auth/profile', profileData),
-  verifyAccount: (token) => api.get(`/auth/verify/${token}`),
+  verifyAccount: (token) => {
+    console.log('📡 API call - verifyAccount');
+    console.log('📝 Token enviado:', token);
+    console.log('🌐 URL completa:', `/auth/verify/${token}`);
+    return api.get(`/auth/verify/${token}`);
+  },
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, password) => api.post(`/auth/reset-password/${token}`, { password })
 };
@@ -73,6 +78,17 @@ export const usersAPI = {
   getById: (id) => api.get(`/users/${id}`),
   update: (id, userData) => api.put(`/users/${id}`, userData),
   delete: (id) => api.delete(`/users/${id}`)
+};
+
+// Dashboard API
+export const getDashboardStats = async () => {
+  try {
+    const response = await api.get('/dashboard/stats');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    throw error;
+  }
 };
 
 export default api;
