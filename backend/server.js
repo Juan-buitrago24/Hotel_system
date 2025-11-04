@@ -9,6 +9,7 @@ import reservationRoutes from './routes/reservation.routes.js';
 import roomRoutes from './routes/room.routes.js';
 import userRoutes from './routes/user.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import hotelRoutes from './routes/hotel.routes.js';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use('/api/reservations', reservationRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/hotels', hotelRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

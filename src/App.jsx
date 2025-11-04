@@ -11,6 +11,7 @@ import Navigation from './components/Navigation'
 import DashboardPage from './pages/DashboardPage'
 import ReservationsPage from './pages/ReservationsPage'
 import RoomsPage from './pages/RoomsPage'
+import HotelsManagementPage from './pages/HotelsManagementPage'
 
 const HotelManagementApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -134,6 +135,7 @@ const HotelManagementApp = () => {
           {currentView === 'dashboard' && <DashboardPage />}
           {currentView === 'reservations' && <ReservationsPage />}
           {currentView === 'rooms' && <RoomsPage />}
+          {currentView === 'hotels' && <HotelsManagementPage />}
         </main>
 
         {showProfile && (

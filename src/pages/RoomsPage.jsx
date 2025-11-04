@@ -4,10 +4,12 @@ import { roomsAPI } from '../services/api';
 import RoomCard from '../components/RoomCard';
 import RoomModal from '../components/RoomModal';
 import Button from '../components/Button';
-import { Plus, Filter, Loader } from 'lucide-react';
+import RoleGuard, { useRole } from '../components/RoleGuard';
+import { Plus, Filter, Loader, Lock } from 'lucide-react';
 
 const RoomsPage = () => {
   const { user } = useAuth();
+  const { isAdmin, hasRole } = useRole();
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -129,7 +131,8 @@ const RoomsPage = () => {
           <h2 className="text-2xl font-bold text-gray-800">Gestión de Habitaciones</h2>
           <p className="text-gray-600 mt-1">Total: {rooms.length} habitaciones</p>
         </div>
-        {user.role === 'admin' && (
+        
+        <RoleGuard allowedRoles={['admin']}>
           <Button 
             onClick={() => {
               setEditingRoom(null);
@@ -140,6 +143,14 @@ const RoomsPage = () => {
             <Plus className="w-5 h-5 mr-2" />
             Nueva Habitación
           </Button>
+        </RoleGuard>
+
+        {/* Mensaje para empleados */}
+        {!isAdmin() && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700 flex items-start gap-2">
+            <Lock className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span>Solo administradores pueden crear nuevas habitaciones</span>
+          </div>
         )}
       </div>
 

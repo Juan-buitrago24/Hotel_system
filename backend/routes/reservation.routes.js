@@ -9,14 +9,16 @@ import {
   updateReservationStatus
 } from '../controllers/reservation.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
+import { filterByHotel, assignHotel } from '../middleware/hotel.middleware.js';
 
 const router = express.Router();
 
 router.use(protect);
+router.use(filterByHotel); // Aplicar filtro de hotel
 
 router.route('/')
   .get(getReservations)
-  .post([
+  .post(assignHotel, [
     body('guestName').trim().notEmpty().withMessage('El nombre del huésped es requerido'),
     body('room').notEmpty().withMessage('La habitación es requerida'),
     body('checkIn').isISO8601().withMessage('Fecha de entrada inválida'),
@@ -27,7 +29,7 @@ router.route('/')
 router.route('/:id')
   .get(getReservation)
   .put(updateReservation)
-  .delete(authorize('admin'), deleteReservation);
+  .delete(authorize('hotel_admin', 'admin_global'), deleteReservation);
 
 router.patch('/:id/status', updateReservationStatus);
 

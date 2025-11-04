@@ -2,3 +2,19 @@ node_modules/
 .env
 .DS_Store
 *.log
+
+# Scripts de prueba y desarrollo (pueden contener credenciales)
+test-*.js
+check-*.js
+debug-*.js
+fix-*.js
+reset-*.js
+create-admin-global.js
+create-admin.ps1
+create-rooms.ps1
+*.ps1
+
+# Archivos temporales
+temp/
+tmp/
+*.tmp

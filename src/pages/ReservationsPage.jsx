@@ -5,7 +5,7 @@ import CalendarView from '../components/CalendarView'
 import ReservationsTable from '../components/ReservationsTable'
 import NewReservationModal from '../components/NewReservationModal'
 import Button from '../components/Button'
-import { Loader } from 'lucide-react'
+import { Loader, Lock } from 'lucide-react'
 
 const ReservationsPage = () => {
   const { user } = useAuth();
@@ -87,6 +87,17 @@ const ReservationsPage = () => {
           + Nueva Reserva
         </Button>
       </div>
+
+      {/* Mensaje informativo para empleados */}
+      {user.role === 'empleado' && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+          <Lock className="w-5 h-5 text-blue-700 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-700">
+            <p className="font-medium">Permisos de empleado</p>
+            <p className="mt-1">Puedes crear y gestionar reservas, pero solo los administradores pueden eliminarlas.</p>
+          </div>
+        </div>
+      )}
 
       <CalendarView
         selectedDate={selectedDate}

@@ -9,14 +9,16 @@ import {
   updateRoomStatus
 } from '../controllers/room.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
+import { filterByHotel, assignHotel } from '../middleware/hotel.middleware.js';
 
 const router = express.Router();
 
 router.use(protect); // Todas las rutas requieren autenticación
+router.use(filterByHotel); // Aplicar filtro de hotel
 
 router.route('/')
   .get(getRooms)
-  .post(authorize('admin'), [
+  .post(authorize('hotel_admin', 'admin_global'), assignHotel, [
     body('number').trim().notEmpty().withMessage('El número de habitación es requerido'),
     body('type').isIn(['simple', 'doble', 'suite', 'familiar']).withMessage('Tipo de habitación inválido'),
     body('capacity').isInt({ min: 1 }).withMessage('La capacidad debe ser al menos 1'),
@@ -26,8 +28,8 @@ router.route('/')
 
 router.route('/:id')
   .get(getRoom)
-  .put(authorize('admin'), updateRoom)
-  .delete(authorize('admin'), deleteRoom);
+  .put(authorize('hotel_admin', 'admin_global'), updateRoom)
+  .delete(authorize('hotel_admin', 'admin_global'), deleteRoom);
 
 router.patch('/:id/status', updateRoomStatus);
 

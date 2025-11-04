@@ -5,7 +5,9 @@ import Room from '../models/Room.model.js';
 export const getReservations = async (req, res) => {
   try {
     const { status, checkIn, checkOut } = req.query;
-    const filter = {};
+    
+    // Aplicar filtro de hotel
+    const filter = { ...req.hotelFilter };
 
     if (status) filter.status = status;
     if (checkIn) filter.checkIn = { $gte: new Date(checkIn) };

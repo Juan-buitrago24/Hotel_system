@@ -20,15 +20,27 @@ const userSchema = new mongoose.Schema({
     required: [true, 'El nombre es requerido'],
     trim: true
   },
+  hotel: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hotel',
+    required: function() {
+      // Hotel es requerido excepto para admin_global y cliente
+      return this.role !== 'admin_global' && this.role !== 'cliente';
+    }
+  },
   role: {
     type: String,
-    enum: ['admin', 'empleado'],
-    default: 'empleado'
+    enum: ['admin_global', 'hotel_admin', 'empleado', 'cliente'],
+    default: 'cliente'
   },
   email: {
     type: String,
     trim: true,
     lowercase: true
+  },
+  phone: {
+    type: String,
+    trim: true
   },
   active: {
     type: Boolean,

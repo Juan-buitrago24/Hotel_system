@@ -1,19 +1,28 @@
 import React from 'react'
-import { Calendar, Users, LayoutDashboard, Bed } from 'lucide-react'
+import { Calendar, Users, LayoutDashboard, Bed, Building2 } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const Navigation = ({ activeView, onViewChange }) => {
+  const { user } = useAuth();
+
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: true },
-    { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true },
-    { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true },
-    { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false }
+    { id: 'hotels', label: 'Gestión de Hoteles', icon: Building2, enabled: true, roles: ['admin_global'] },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: true, roles: ['admin_global', 'hotel_admin', 'empleado'] },
+    { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true, roles: ['admin_global', 'hotel_admin', 'empleado'] },
+    { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true, roles: ['admin_global', 'hotel_admin', 'empleado'] },
+    { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false, roles: ['admin_global', 'hotel_admin', 'empleado'] }
   ];
+
+  // Filtrar items según el rol del usuario
+  const visibleNavItems = navItems.filter(item => 
+    item.roles.includes(user?.role)
+  );
 
   return (
     <nav className="bg-white border-b">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex space-x-1 overflow-x-auto">
-          {navItems.map(item => (
+          {visibleNavItems.map(item => (
             <button
               key={item.id}
               onClick={() => item.enabled && onViewChange(item.id)}

@@ -33,7 +33,16 @@ export const protect = async (req, res, next) => {
 
 export const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    // Mapeo de roles antiguos a nuevos para compatibilidad
+    const roleMapping = {
+      'admin': 'hotel_admin',
+      'super_admin': 'admin_global'
+    };
+
+    // Obtener el rol actual del usuario (con mapeo si es necesario)
+    const userRole = roleMapping[req.user.role] || req.user.role;
+
+    if (!roles.includes(userRole) && !roles.includes(req.user.role)) {
       return res.status(403).json({ 
         message: `El rol ${req.user.role} no tiene permiso para realizar esta acción` 
       });

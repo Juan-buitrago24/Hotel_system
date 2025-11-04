@@ -1,10 +1,21 @@
 import mongoose from 'mongoose';
 
 const roomSchema = new mongoose.Schema({
+  hotel: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hotel',
+    required: [true, 'El hotel es requerido'],
+    index: true
+  },
+  hotel: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hotel',
+    required: [true, 'El hotel es requerido'],
+    index: true
+  },
   number: {
     type: String,
     required: [true, 'El número de habitación es requerido'],
-    unique: true,
     trim: true
   },
   type: {
@@ -50,6 +61,8 @@ const roomSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Índice compuesto: número de habitación único por hotel
+roomSchema.index({ hotel: 1, number: 1 }, { unique: true });
 // Índice para búsquedas rápidas
 roomSchema.index({ number: 1, status: 1 });
 

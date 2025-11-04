@@ -70,3 +70,18 @@ data/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+# Scripts de desarrollo con credenciales
+create-admin.ps1
+create-rooms.ps1
+start.ps1
+backend/test-*.js
+backend/check-*.js
+backend/debug-*.js
+backend/fix-*.js
+backend/reset-*.js
+backend/create-admin-global.js
+
+# Archivos de documentación temporal
+CREDENCIALES_PRUEBA.md
+GUIA_PRUEBAS.md

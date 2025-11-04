@@ -4,7 +4,9 @@ import Room from '../models/Room.model.js';
 export const getRooms = async (req, res) => {
   try {
     const { status, type, floor } = req.query;
-    const filter = {};
+    
+    // Aplicar filtro de hotel (viene del middleware)
+    const filter = { ...req.hotelFilter };
 
     if (status) filter.status = status;
     if (type) filter.type = type;
@@ -20,7 +22,11 @@ export const getRooms = async (req, res) => {
 
 export const getRoom = async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id);
+    // Aplicar filtro de hotel
+    const room = await Room.findOne({ 
+      _id: req.params.id,
+      ...req.hotelFilter 
+    });
     
     if (!room) {
       return res.status(404).json({ message: 'Habitación no encontrada' });
@@ -55,19 +61,29 @@ export const createRoom = async (req, res) => {
 
 export const updateRoom = async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id);
+    // Verificar que la habitación pertenece al hotel del usuario
+    const room = await Room.findOne({ 
+      _id: req.params.id,
+      ...req.hotelFilter 
+    });
 
     if (!room) {
       return res.status(404).json({ message: 'Habitación no encontrada' });
     }
 
-    // Verificar si se intenta cambiar el número y ya existe
+    // Verificar si se intenta cambiar el número y ya existe en ESTE hotel
     if (req.body.number && req.body.number !== room.number) {
-      const roomExists = await Room.findOne({ number: req.body.number });
+      const roomExists = await Room.findOne({ 
+        number: req.body.number,
+        hotel: room.hotel 
+      });
       if (roomExists) {
-        return res.status(400).json({ message: 'Ya existe una habitación con ese número' });
+        return res.status(400).json({ message: 'Ya existe una habitación con ese número en este hotel' });
       }
     }
+
+    // No permitir cambiar el hotel
+    delete req.body.hotel;
 
     const updatedRoom = await Room.findByIdAndUpdate(
       req.params.id,
