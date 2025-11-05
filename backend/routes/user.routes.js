@@ -11,7 +11,7 @@ import { protect, authorize } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 router.use(protect);
-router.use(authorize('admin')); // Solo admins pueden gestionar usuarios
+router.use(authorize('hotel_admin', 'admin_global')); // Hotel admins y admin global pueden gestionar usuarios
 
 router.route('/')
   .get(getUsers)

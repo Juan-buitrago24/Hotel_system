@@ -3,7 +3,9 @@ import { sendVerificationEmail } from '../services/email.service.js';
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    // Filtrar por hotel del usuario autenticado (excepto admin_global)
+    const filter = req.user.role === 'admin_global' ? {} : { hotel: req.user.hotel };
+    const users = await User.find(filter).select('-password').populate('hotel', 'name');
     res.json(users);
   } catch (error) {
     console.error(error);
@@ -13,7 +15,7 @@ export const getUsers = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
-    const { username, password, name, email, role } = req.body;
+    const { username, password, name, email, phone, role } = req.body;
 
     // Validaciones
     if (!username || !password || !name) {
@@ -32,20 +34,36 @@ export const createUser = async (req, res) => {
       }
     }
 
-    // Validar rol
-    const validRoles = ['admin', 'empleado', 'cliente'];
-    if (role && !validRoles.includes(role)) {
+    // Validar rol - hotel_admin solo puede crear empleados
+    const validRoles = ['hotel_admin', 'empleado', 'cliente'];
+    const userRole = role || 'empleado';
+    
+    if (!validRoles.includes(userRole)) {
       return res.status(400).json({ message: 'Rol inválido' });
     }
 
-    const user = await User.create({
+    // hotel_admin solo puede crear empleados
+    if (req.user.role === 'hotel_admin' && userRole !== 'empleado') {
+      return res.status(403).json({ message: 'Solo puedes crear empleados' });
+    }
+
+    // Asignar el hotel del usuario autenticado (excepto admin_global)
+    const userData = {
       username,
       password,
       name,
       email,
-      role: role || 'empleado',
+      phone,
+      role: userRole,
       verified: !email // Si no hay email, se marca como verificado
-    });
+    };
+
+    // Solo asignar hotel si el usuario no es admin_global
+    if (req.user.role !== 'admin_global' && req.user.hotel) {
+      userData.hotel = req.user.hotel;
+    }
+
+    const user = await User.create(userData);
 
     // Si hay email, generar token de verificación
     if (email) {
@@ -97,17 +115,37 @@ export const updateUser = async (req, res) => {
   try {
     const { password, ...updateData } = req.body;
 
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-password');
+    // Buscar el usuario
+    const user = await User.findById(req.params.id);
 
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    res.json(user);
+    // Validar que hotel_admin solo edite empleados de su hotel
+    if (req.user.role === 'hotel_admin') {
+      if (user.hotel.toString() !== req.user.hotel.toString()) {
+        return res.status(403).json({ message: 'No puedes editar empleados de otro hotel' });
+      }
+      if (user.role !== 'empleado') {
+        return res.status(403).json({ message: 'Solo puedes editar empleados' });
+      }
+    }
+
+    // Actualizar campos
+    Object.keys(updateData).forEach(key => {
+      user[key] = updateData[key];
+    });
+
+    // Si se proporciona nueva contraseña, actualizarla
+    if (password) {
+      user.password = password; // El pre-save hook del modelo la hasheará
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select('-password');
+    res.json(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al actualizar el usuario' });
@@ -122,9 +160,19 @@ export const deleteUser = async (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // No eliminar, solo desactivar
-    await User.findByIdAndUpdate(req.params.id, { active: false });
-    res.json({ message: 'Usuario desactivado correctamente' });
+    // Validar que hotel_admin solo elimine empleados de su hotel
+    if (req.user.role === 'hotel_admin') {
+      if (user.hotel.toString() !== req.user.hotel.toString()) {
+        return res.status(403).json({ message: 'No puedes eliminar empleados de otro hotel' });
+      }
+      if (user.role !== 'empleado') {
+        return res.status(403).json({ message: 'Solo puedes eliminar empleados' });
+      }
+    }
+
+    // Eliminar permanentemente (puedes cambiar a desactivar si prefieres)
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Usuario eliminado correctamente' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al eliminar el usuario' });
