@@ -10,32 +10,39 @@ export const getDashboardStats = async (req, res) => {
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
     const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
-    // 1. Estadísticas de Habitaciones
-    const totalRooms = await Room.countDocuments();
-    const availableRooms = await Room.countDocuments({ status: 'Disponible' });
-    const occupiedRooms = await Room.countDocuments({ status: 'Ocupada' });
-    const maintenanceRooms = await Room.countDocuments({ status: 'Mantenimiento' });
+    // Obtener filtro de hotel del middleware
+    const hotelFilter = req.hotelFilter || {};
+
+    // 1. Estadísticas de Habitaciones (filtradas por hotel)
+    const totalRooms = await Room.countDocuments(hotelFilter);
+    const availableRooms = await Room.countDocuments({ ...hotelFilter, status: 'disponible' });
+    const occupiedRooms = await Room.countDocuments({ ...hotelFilter, status: 'ocupada' });
+    const maintenanceRooms = await Room.countDocuments({ ...hotelFilter, status: 'mantenimiento' });
     const occupancyRate = totalRooms > 0 ? ((occupiedRooms / totalRooms) * 100).toFixed(1) : 0;
 
-    // 2. Estadísticas de Reservas
+    // 2. Estadísticas de Reservas (filtradas por hotel)
     const activeReservations = await Reservation.countDocuments({
-      status: { $in: ['Confirmada', 'En Curso'] }
+      ...hotelFilter,
+      status: { $in: ['confirmada', 'en_curso'] }
     });
 
     const todayReservations = await Reservation.countDocuments({
+      ...hotelFilter,
       createdAt: { $gte: startOfDay, $lte: endOfDay }
     });
 
     const monthReservations = await Reservation.countDocuments({
+      ...hotelFilter,
       createdAt: { $gte: startOfMonth, $lte: endOfMonth }
     });
 
-    // 3. Ingresos
+    // 3. Ingresos (filtrados por hotel)
     const monthRevenueData = await Reservation.aggregate([
       {
         $match: {
+          ...hotelFilter,
           createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-          status: { $ne: 'Cancelada' }
+          status: { $ne: 'cancelada' }
         }
       },
       {
@@ -50,8 +57,9 @@ export const getDashboardStats = async (req, res) => {
     const todayRevenueData = await Reservation.aggregate([
       {
         $match: {
+          ...hotelFilter,
           createdAt: { $gte: startOfDay, $lte: endOfDay },
-          status: { $ne: 'Cancelada' }
+          status: { $ne: 'cancelada' }
         }
       },
       {
@@ -63,38 +71,39 @@ export const getDashboardStats = async (req, res) => {
     ]);
     const todayRevenue = todayRevenueData.length > 0 ? todayRevenueData[0].total : 0;
 
-    // 4. Check-ins y Check-outs próximos (hoy y mañana)
+    // 4. Check-ins y Check-outs próximos (hoy y mañana) - filtrados por hotel
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const endOfTomorrow = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 23, 59, 59);
 
     const upcomingCheckIns = await Reservation.find({
+      ...hotelFilter,
       checkIn: { $gte: startOfDay, $lte: endOfTomorrow },
-      status: { $in: ['Confirmada', 'Pendiente'] }
+      status: { $in: ['confirmada', 'pendiente'] }
     })
-      .populate('room', 'roomNumber type')
-      .populate('guest', 'name')
+      .populate('room', 'number type')
       .sort({ checkIn: 1 })
       .limit(5);
 
     const upcomingCheckOuts = await Reservation.find({
+      ...hotelFilter,
       checkOut: { $gte: startOfDay, $lte: endOfTomorrow },
-      status: 'En Curso'
+      status: 'en_curso'
     })
-      .populate('room', 'roomNumber type')
-      .populate('guest', 'name')
+      .populate('room', 'number type')
       .sort({ checkOut: 1 })
       .limit(5);
 
-    // 5. Usuarios registrados
-    const totalUsers = await User.countDocuments();
+    // 5. Usuarios registrados (del hotel)
+    const totalUsers = await User.countDocuments(hotelFilter);
 
-    // 6. Habitaciones más reservadas (top 5 del mes)
+    // 6. Habitaciones más reservadas (top 5 del mes) - filtradas por hotel
     const topRooms = await Reservation.aggregate([
       {
         $match: {
+          ...hotelFilter,
           createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-          status: { $ne: 'Cancelada' }
+          status: { $ne: 'cancelada' }
         }
       },
       {
@@ -117,13 +126,14 @@ export const getDashboardStats = async (req, res) => {
       { $unwind: '$roomInfo' }
     ]);
 
-    // 7. Tendencia de reservas (últimos 7 días)
+    // 7. Tendencia de reservas (últimos 7 días) - filtrada por hotel
     const last7Days = new Date(now);
     last7Days.setDate(last7Days.getDate() - 7);
 
     const reservationTrend = await Reservation.aggregate([
       {
         $match: {
+          ...hotelFilter,
           createdAt: { $gte: last7Days, $lte: now }
         }
       },
@@ -158,17 +168,17 @@ export const getDashboardStats = async (req, res) => {
       },
       upcomingCheckIns: upcomingCheckIns.map(res => ({
         id: res._id,
-        room: res.room?.roomNumber || 'N/A',
+        room: res.room?.number || 'N/A',
         roomType: res.room?.type || 'N/A',
-        guest: res.guest?.name || res.guestName,
+        guest: res.guestName,
         checkIn: res.checkIn,
         status: res.status
       })),
       upcomingCheckOuts: upcomingCheckOuts.map(res => ({
         id: res._id,
-        room: res.room?.roomNumber || 'N/A',
+        room: res.room?.number || 'N/A',
         roomType: res.room?.type || 'N/A',
-        guest: res.guest?.name || res.guestName,
+        guest: res.guestName,
         checkOut: res.checkOut,
         status: res.status
       })),
@@ -176,7 +186,7 @@ export const getDashboardStats = async (req, res) => {
         total: totalUsers
       },
       topRooms: topRooms.map(item => ({
-        roomNumber: item.roomInfo.roomNumber,
+        roomNumber: item.roomInfo.number,
         type: item.roomInfo.type,
         reservations: item.count,
         revenue: item.revenue
