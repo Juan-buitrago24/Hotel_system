@@ -8,8 +8,18 @@ const CalendarView = ({ selectedDate, onDateChange, reservations }) => {
 
   const getReservationsForDay = (day) => {
     if (!day) return [];
-    const dateStr = formatDateString(selectedDate.getFullYear(), selectedDate.getMonth(), day);
-    return reservations.filter(r => r.checkIn === dateStr || r.checkOut === dateStr);
+    
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const date = new Date(year, month, day);
+    const dateStr = date.toISOString().split('T')[0];
+    
+    // Buscar reservas que incluyan esta fecha (entre checkIn y checkOut)
+    return reservations.filter(r => {
+      const checkIn = new Date(r.checkIn).toISOString().split('T')[0];
+      const checkOut = new Date(r.checkOut).toISOString().split('T')[0];
+      return dateStr >= checkIn && dateStr <= checkOut;
+    });
   };
 
   const changeMonth = (offset) => {

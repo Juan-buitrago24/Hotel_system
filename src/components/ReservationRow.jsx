@@ -1,6 +1,6 @@
 import React from 'react'
 import { getStatusColor } from '../utils/helpers'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Star } from 'lucide-react'
 
 const ReservationRow = ({ reservation, onStatusChange, onDelete, canDelete }) => {
   const formatDate = (dateString) => {
@@ -12,12 +12,25 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, canDelete }) =>
   };
 
   const roomNumber = reservation.room?.number || reservation.roomNumber || 'N/A';
+  
+  // Información del huésped desde el modelo Guest o del campo directo
+  const guestName = reservation.guest 
+    ? `${reservation.guest.firstName} ${reservation.guest.lastName}` 
+    : reservation.guestName;
+  const guestDocument = reservation.guest?.documentNumber;
+  const isVIP = reservation.guest?.isVIP;
 
   return (
     <tr className="border-b hover:bg-gray-50">
       <td className="py-3 px-4">
         <div>
-          <div className="font-medium text-gray-900">{reservation.guestName}</div>
+          <div className="font-medium text-gray-900 flex items-center gap-2">
+            {guestName}
+            {isVIP && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
+          </div>
+          {guestDocument && (
+            <div className="text-xs text-gray-500">Doc: {guestDocument}</div>
+          )}
           {reservation.guestEmail && (
             <div className="text-xs text-gray-500">{reservation.guestEmail}</div>
           )}
