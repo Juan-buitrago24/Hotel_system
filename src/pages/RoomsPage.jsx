@@ -6,10 +6,12 @@ import RoomModal from '../components/RoomModal';
 import Button from '../components/Button';
 import RoleGuard, { useRole } from '../components/RoleGuard';
 import { Plus, Filter, Loader, Lock } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const RoomsPage = () => {
   const { user } = useAuth();
   const { isAdmin, hasRole } = useRole();
+  const toast = useToast();
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,7 @@ const RoomsPage = () => {
       setRooms(response.data);
     } catch (error) {
       console.error('Error al cargar habitaciones:', error);
-      alert('Error al cargar las habitaciones');
+      toast.error('Error al cargar las habitaciones');
     } finally {
       setLoading(false);
     }
@@ -62,8 +64,10 @@ const RoomsPage = () => {
     try {
       if (editingRoom) {
         await roomsAPI.update(editingRoom._id, roomData);
+        toast.success('Habitación actualizada exitosamente');
       } else {
         await roomsAPI.create(roomData);
+        toast.success('Habitación creada exitosamente');
       }
       await fetchRooms();
       setShowModal(false);
@@ -71,7 +75,7 @@ const RoomsPage = () => {
     } catch (error) {
       console.error('Error al guardar habitación:', error);
       const message = error.response?.data?.message || 'Error al guardar la habitación';
-      alert(message);
+      toast.error(message);
     }
   };
 
@@ -86,10 +90,11 @@ const RoomsPage = () => {
     try {
       await roomsAPI.delete(id);
       await fetchRooms();
+      toast.success('Habitación eliminada exitosamente');
     } catch (error) {
       console.error('Error al eliminar:', error);
       const message = error.response?.data?.message || 'Error al eliminar la habitación';
-      alert(message);
+      toast.error(message);
     }
   };
 
@@ -97,9 +102,10 @@ const RoomsPage = () => {
     try {
       await roomsAPI.updateStatus(id, newStatus);
       await fetchRooms();
+      toast.success('Estado actualizado exitosamente');
     } catch (error) {
       console.error('Error al actualizar estado:', error);
-      alert('Error al actualizar el estado');
+      toast.error('Error al actualizar el estado');
     }
   };
 

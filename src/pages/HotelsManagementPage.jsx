@@ -3,9 +3,11 @@ import { Hotel, Plus, Users, Bed, Calendar, TrendingUp, Edit, Trash2, CheckCircl
 import Button from '../components/Button';
 import RegisterHotelModal from '../components/RegisterHotelModal';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const HotelsManagementPage = () => {
   const { user } = useAuth();
+  const toast = useToast();
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -32,7 +34,7 @@ const HotelsManagementPage = () => {
       setHotels(data);
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al cargar los hoteles: ' + error.message);
+      toast.error('Error al cargar los hoteles: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -58,10 +60,11 @@ const HotelsManagementPage = () => {
         throw new Error('Error al actualizar el hotel');
       }
 
+      toast.success(`Hotel ${!currentStatus ? 'activado' : 'desactivado'} exitosamente`);
       fetchHotels();
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al actualizar el hotel: ' + error.message);
+      toast.error('Error al actualizar el hotel: ' + error.message);
     }
   };
 
