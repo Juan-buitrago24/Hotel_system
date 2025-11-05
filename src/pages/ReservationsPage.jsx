@@ -5,8 +5,9 @@ import CalendarView from '../components/CalendarView'
 import ReservationsTable from '../components/ReservationsTable'
 import NewReservationModal from '../components/NewReservationModal'
 import Button from '../components/Button'
-import { Loader, Lock } from 'lucide-react'
+import { Lock } from 'lucide-react'
 import { useToast } from '../context/ToastContext'
+import { SkeletonCalendar, SkeletonTable } from '../components/SkeletonLoader'
 
 const ReservationsPage = () => {
   const { user } = useAuth();
@@ -78,8 +79,21 @@ const ReservationsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center">
+          <div className="skeleton h-8 w-48 rounded"></div>
+          <div className="skeleton h-10 w-40 rounded-lg"></div>
+        </div>
+
+        {/* Calendar Skeleton */}
+        <SkeletonCalendar />
+
+        {/* Table Skeleton */}
+        <div>
+          <div className="skeleton h-6 w-32 rounded mb-4"></div>
+          <SkeletonTable rows={5} columns={7} />
+        </div>
       </div>
     );
   }

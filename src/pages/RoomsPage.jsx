@@ -5,8 +5,9 @@ import RoomCard from '../components/RoomCard';
 import RoomModal from '../components/RoomModal';
 import Button from '../components/Button';
 import RoleGuard, { useRole } from '../components/RoleGuard';
-import { Plus, Filter, Loader, Lock } from 'lucide-react';
+import { Plus, Filter, Lock } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { SkeletonGrid } from '../components/SkeletonLoader';
 
 const RoomsPage = () => {
   const { user } = useAuth();
@@ -123,8 +124,25 @@ const RoomsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div className="skeleton h-8 w-48 rounded"></div>
+          <div className="skeleton h-10 w-40 rounded-lg"></div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white rounded-lg shadow-sm p-4">
+              <div className="skeleton h-4 w-24 rounded mb-2"></div>
+              <div className="skeleton h-8 w-16 rounded"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Grid Skeleton */}
+        <SkeletonGrid items={6} columns={3} />
       </div>
     );
   }
