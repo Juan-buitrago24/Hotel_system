@@ -4,6 +4,7 @@ import Button from '../components/Button';
 import RegisterHotelModal from '../components/RegisterHotelModal';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { SkeletonGrid } from '../components/SkeletonLoader';
 
 const HotelsManagementPage = () => {
   const { user } = useAuth();
@@ -81,8 +82,28 @@ const HotelsManagementPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="skeleton h-8 w-48 rounded mb-2"></div>
+            <div className="skeleton h-4 w-64 rounded"></div>
+          </div>
+          <div className="skeleton h-10 w-40 rounded-lg"></div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white rounded-lg shadow-sm p-6">
+              <div className="skeleton h-5 w-32 rounded mb-2"></div>
+              <div className="skeleton h-10 w-20 rounded"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Hotels Grid Skeleton */}
+        <SkeletonGrid items={6} columns={3} />
       </div>
     );
   }
