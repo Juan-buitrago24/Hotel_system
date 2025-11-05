@@ -8,13 +8,17 @@ import VerifyAccountPage from './components/VerifyAccountPage'
 import ProfilePage from './components/ProfilePage'
 import Header from './components/Header'
 import Navigation from './components/Navigation'
+import HotelBanner from './components/HotelBanner'
 import DashboardPage from './pages/DashboardPage'
 import ReservationsPage from './pages/ReservationsPage'
 import RoomsPage from './pages/RoomsPage'
 import HotelsManagementPage from './pages/HotelsManagementPage'
+import EmployeesPage from './pages/EmployeesPage'
+import { hotelAPI } from './services/api'
 
 const HotelManagementApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentHotel, setCurrentHotel] = useState(null);
   const [currentView, setCurrentView] = useState('dashboard');
   const [authView, setAuthView] = useState('login'); // 'login', 'register', 'forgot-password', 'reset-password', 'verify-account'
   const [resetToken, setResetToken] = useState('');
@@ -43,16 +47,39 @@ const HotelManagementApp = () => {
     }
   }, []);
 
+  // Cargar datos del hotel del usuario
+  useEffect(() => {
+    const loadHotel = async () => {
+      if (currentUser && currentUser.hotel) {
+        try {
+          const hotelData = await hotelAPI.getById(currentUser.hotel);
+          setCurrentHotel(hotelData);
+        } catch (error) {
+          console.error('Error cargando hotel:', error);
+        }
+      } else {
+        setCurrentHotel(null);
+      }
+    };
+    
+    loadHotel();
+  }, [currentUser]);
+
   const handleLogin = (user, token) => {
     setCurrentUser(user);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setAuthView('login');
+    // Si es admin_global, ir a gestión de hoteles, sino a dashboard
+    setCurrentView(user.role === 'admin_global' ? 'hotels' : 'dashboard');
     window.history.pushState({}, '', '/');
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setCurrentHotel(null);
+    setCurrentView('dashboard'); // Reset a la vista inicial
+    setShowProfile(false);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setAuthView('login');
@@ -130,12 +157,14 @@ const HotelManagementApp = () => {
           onLogout={handleLogout}
           onShowProfile={() => setShowProfile(true)}
         />
+        <HotelBanner hotel={currentHotel} user={currentUser} />
         <Navigation activeView={currentView} onViewChange={setCurrentView} />
         <main className="max-w-7xl mx-auto p-4 lg:p-6">
           {currentView === 'dashboard' && <DashboardPage />}
           {currentView === 'reservations' && <ReservationsPage />}
           {currentView === 'rooms' && <RoomsPage />}
           {currentView === 'hotels' && <HotelsManagementPage />}
+          {currentView === 'employees' && <EmployeesPage user={currentUser} />}
         </main>
 
         {showProfile && (
