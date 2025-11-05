@@ -6,9 +6,11 @@ import ReservationsTable from '../components/ReservationsTable'
 import NewReservationModal from '../components/NewReservationModal'
 import Button from '../components/Button'
 import { Loader, Lock } from 'lucide-react'
+import { useToast } from '../context/ToastContext'
 
 const ReservationsPage = () => {
   const { user } = useAuth();
+  const toast = useToast();
   const [reservations, setReservations] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -30,7 +32,7 @@ const ReservationsPage = () => {
       setRooms(roomsRes.data);
     } catch (error) {
       console.error('Error al cargar datos:', error);
-      alert('Error al cargar los datos');
+      toast.error('Error al cargar los datos');
     } finally {
       setLoading(false);
     }
@@ -41,10 +43,11 @@ const ReservationsPage = () => {
       await reservationsAPI.create(newReservation);
       await fetchData();
       setShowModal(false);
+      toast.success('Reserva creada exitosamente');
     } catch (error) {
       console.error('Error al crear reserva:', error);
       const message = error.response?.data?.message || 'Error al crear la reserva';
-      alert(message);
+      toast.error(message);
     }
   };
 
@@ -54,10 +57,11 @@ const ReservationsPage = () => {
     try {
       await reservationsAPI.delete(id);
       await fetchData();
+      toast.success('Reserva eliminada exitosamente');
     } catch (error) {
       console.error('Error al eliminar:', error);
       const message = error.response?.data?.message || 'Error al eliminar la reserva';
-      alert(message);
+      toast.error(message);
     }
   };
 
@@ -65,9 +69,10 @@ const ReservationsPage = () => {
     try {
       await reservationsAPI.updateStatus(id, newStatus);
       await fetchData();
+      toast.success('Estado actualizado exitosamente');
     } catch (error) {
       console.error('Error al actualizar estado:', error);
-      alert('Error al actualizar el estado');
+      toast.error('Error al actualizar el estado');
     }
   };
 

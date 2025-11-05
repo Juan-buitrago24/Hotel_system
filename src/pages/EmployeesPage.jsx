@@ -3,8 +3,10 @@ import { Users, Plus, Edit2, Trash2, Mail, Phone, Calendar, Search } from "lucid
 import { userAPI } from "../services/api";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
+import { useToast } from '../context/ToastContext';
 
 const EmployeesManagementPage = ({ user }) => {
+  const toast = useToast();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -92,15 +94,17 @@ const EmployeesManagementPage = ({ user }) => {
           delete updateData.password; // No actualizar password si está vacío
         }
         await userAPI.update(editingEmployee._id, updateData);
+        toast.success('Empleado actualizado exitosamente');
       } else {
         // Crear nuevo empleado
         await userAPI.create(formData);
+        toast.success('Empleado creado exitosamente');
       }
       handleCloseModal();
       loadEmployees();
     } catch (error) {
       console.error('Error guardando empleado:', error);
-      alert('Error al guardar empleado: ' + (error.response?.data?.message || error.message));
+      toast.error(error.response?.data?.message || 'Error al guardar empleado');
     }
   };
 
@@ -109,10 +113,11 @@ const EmployeesManagementPage = ({ user }) => {
     
     try {
       await userAPI.delete(employeeId);
+      toast.success('Empleado eliminado exitosamente');
       loadEmployees();
     } catch (error) {
       console.error('Error eliminando empleado:', error);
-      alert('Error al eliminar empleado');
+      toast.error('Error al eliminar empleado');
     }
   };
 
