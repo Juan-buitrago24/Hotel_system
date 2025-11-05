@@ -1,5 +1,5 @@
 import React from 'react'
-import { Calendar, Users, LayoutDashboard, Bed, Building2 } from 'lucide-react'
+import { Calendar, Users, LayoutDashboard, Bed, Building2, UserCog } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const Navigation = ({ activeView, onViewChange }) => {
@@ -7,10 +7,11 @@ const Navigation = ({ activeView, onViewChange }) => {
 
   const navItems = [
     { id: 'hotels', label: 'Gestión de Hoteles', icon: Building2, enabled: true, roles: ['admin_global'] },
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: true, roles: ['admin_global', 'hotel_admin', 'empleado'] },
-    { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true, roles: ['admin_global', 'hotel_admin', 'empleado'] },
-    { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true, roles: ['admin_global', 'hotel_admin', 'empleado'] },
-    { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false, roles: ['admin_global', 'hotel_admin', 'empleado'] }
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, enabled: true, roles: ['hotel_admin', 'empleado'] },
+    { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true, roles: ['hotel_admin', 'empleado'] },
+    { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true, roles: ['hotel_admin', 'empleado'] },
+    { id: 'employees', label: 'Empleados', icon: UserCog, enabled: true, roles: ['hotel_admin'] },
+    { id: 'guests', label: 'Huéspedes', icon: Users, enabled: false, roles: ['hotel_admin', 'empleado'] }
   ];
 
   // Filtrar items según el rol del usuario
