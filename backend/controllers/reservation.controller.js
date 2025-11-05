@@ -15,6 +15,7 @@ export const getReservations = async (req, res) => {
 
     const reservations = await Reservation.find(filter)
       .populate('room', 'number type')
+      .populate('guest', 'firstName lastName documentNumber isVIP')
       .populate('createdBy', 'name username')
       .sort({ checkIn: -1 });
 
@@ -29,6 +30,7 @@ export const getReservation = async (req, res) => {
   try {
     const reservation = await Reservation.findById(req.params.id)
       .populate('room')
+      .populate('guest', 'firstName lastName documentNumber email phone isVIP')
       .populate('createdBy', 'name username');
 
     if (!reservation) {
@@ -92,6 +94,7 @@ export const createReservation = async (req, res) => {
 
     const populatedReservation = await Reservation.findById(reservation._id)
       .populate('room', 'number type')
+      .populate('guest', 'firstName lastName documentNumber isVIP')
       .populate('createdBy', 'name username');
 
     res.status(201).json(populatedReservation);
