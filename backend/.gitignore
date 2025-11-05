@@ -9,7 +9,10 @@ check-*.js
 debug-*.js
 fix-*.js
 reset-*.js
-create-admin-global.js
+clean-*.js
+verify-*.js
+create-admin*.js
+create-employee*.js
 create-admin.ps1
 create-rooms.ps1
 *.ps1
