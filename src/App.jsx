@@ -14,6 +14,7 @@ import ReservationsPage from './pages/ReservationsPage'
 import RoomsPage from './pages/RoomsPage'
 import HotelsManagementPage from './pages/HotelsManagementPage'
 import EmployeesPage from './pages/EmployeesPage'
+import GuestsPage from './pages/GuestsPage'
 import { hotelAPI } from './services/api'
 
 const HotelManagementApp = () => {
@@ -164,6 +165,7 @@ const HotelManagementApp = () => {
           {currentView === 'reservations' && <ReservationsPage />}
           {currentView === 'rooms' && <RoomsPage />}
           {currentView === 'hotels' && <HotelsManagementPage />}
+          {currentView === 'guests' && <GuestsPage user={currentUser} />}
           {currentView === 'employees' && <EmployeesPage user={currentUser} />}
         </main>
 
