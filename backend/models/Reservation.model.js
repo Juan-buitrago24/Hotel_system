@@ -7,6 +7,11 @@ const reservationSchema = new mongoose.Schema({
     required: [true, 'El hotel es requerido'],
     index: true
   },
+  guest: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Guest',
+    index: true
+  },
   guestName: {
     type: String,
     required: [true, 'El nombre del huésped es requerido'],
