@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import InputField from './InputField'
 import Button from './Button'
-import { X } from 'lucide-react'
+import { X, Search, User, Star } from 'lucide-react'
+import { guestAPI } from '../services/api'
 
 const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
   const [formData, setFormData] = useState({
+    guest: null, // ID del huésped si se selecciona uno existente
     guestName: '',
     guestEmail: '',
     guestPhone: '',
@@ -15,10 +17,50 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
     notes: ''
   });
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showGuestSearch, setShowGuestSearch] = useState(false);
+  const [allGuests, setAllGuests] = useState([]);
+
+  // Cargar todos los huéspedes al abrir el modal
+  useEffect(() => {
+    if (isOpen) {
+      loadGuests();
+    }
+  }, [isOpen]);
+
+  const loadGuests = async () => {
+    try {
+      const guests = await guestAPI.getAll();
+      setAllGuests(guests);
+    } catch (error) {
+      console.error('Error cargando huéspedes:', error);
+    }
+  };
+
+  // Buscar huéspedes
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+      return;
+    }
+
+    const results = allGuests.filter(g =>
+      g.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.documentNumber?.includes(searchTerm) ||
+      g.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.phone?.includes(searchTerm)
+    ).slice(0, 5); // Limitar a 5 resultados
+
+    setSearchResults(results);
+  }, [searchTerm, allGuests]);
+
   // Resetear formulario cuando se abre/cierra
   useEffect(() => {
     if (!isOpen) {
       setFormData({
+        guest: null,
         guestName: '',
         guestEmail: '',
         guestPhone: '',
@@ -28,8 +70,34 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
         guests: 1,
         notes: ''
       });
+      setSearchTerm('');
+      setSearchResults([]);
+      setShowGuestSearch(false);
     }
   }, [isOpen]);
+
+  const handleSelectGuest = (guest) => {
+    setFormData({
+      ...formData,
+      guest: guest._id,
+      guestName: `${guest.firstName} ${guest.lastName}`,
+      guestEmail: guest.email || '',
+      guestPhone: guest.phone || ''
+    });
+    setSearchTerm('');
+    setSearchResults([]);
+    setShowGuestSearch(false);
+  };
+
+  const handleClearGuest = () => {
+    setFormData({
+      ...formData,
+      guest: null,
+      guestName: '',
+      guestEmail: '',
+      guestPhone: ''
+    });
+  };
 
   if (!isOpen) return null;
 
@@ -65,6 +133,83 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Búsqueda de Huésped Existente */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                <User className="w-5 h-5 text-blue-600" />
+                Información del Huésped
+              </h4>
+              {!formData.guest && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setShowGuestSearch(!showGuestSearch)}
+                  className="text-sm"
+                >
+                  <Search className="w-4 h-4 mr-1" />
+                  {showGuestSearch ? 'Nuevo Huésped' : 'Buscar Existente'}
+                </Button>
+              )}
+              {formData.guest && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleClearGuest}
+                  className="text-sm"
+                >
+                  Cambiar Huésped
+                </Button>
+              )}
+            </div>
+
+            {showGuestSearch && !formData.guest && (
+              <div className="mb-4 relative">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Buscar por nombre, documento, email o teléfono..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                
+                {searchResults.length > 0 && (
+                  <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {searchResults.map((guest) => (
+                      <button
+                        key={guest._id}
+                        type="button"
+                        onClick={() => handleSelectGuest(guest)}
+                        className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-0"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-gray-900 flex items-center gap-2">
+                              {guest.firstName} {guest.lastName}
+                              {guest.isVIP && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {guest.documentType} {guest.documentNumber}
+                            </p>
+                            {guest.email && (
+                              <p className="text-sm text-gray-500">{guest.email}</p>
+                            )}
+                          </div>
+                          {guest.phone && (
+                            <span className="text-sm text-gray-500">{guest.phone}</span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputField
               label="Nombre del Huésped *"
@@ -72,6 +217,7 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
               onChange={(e) => setFormData({...formData, guestName: e.target.value})}
               placeholder="Juan Pérez"
               required
+              disabled={!!formData.guest}
             />
 
             <InputField
@@ -80,6 +226,7 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
               value={formData.guestEmail}
               onChange={(e) => setFormData({...formData, guestEmail: e.target.value})}
               placeholder="juan@email.com"
+              disabled={!!formData.guest}
             />
 
             <InputField
@@ -88,6 +235,7 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
               value={formData.guestPhone}
               onChange={(e) => setFormData({...formData, guestPhone: e.target.value})}
               placeholder="+57 300 123 4567"
+              disabled={!!formData.guest}
             />
 
             <div>
