@@ -74,10 +74,38 @@ export const reservationsAPI = {
 
 // Users API
 export const usersAPI = {
-  getAll: () => api.get('/users'),
-  getById: (id) => api.get(`/users/${id}`),
-  update: (id, userData) => api.put(`/users/${id}`, userData),
-  delete: (id) => api.delete(`/users/${id}`)
+  getAll: async () => {
+    const response = await api.get('/users');
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/users/${id}`);
+    return response.data;
+  },
+  create: async (userData) => {
+    const response = await api.post('/users', userData);
+    return response.data;
+  },
+  update: async (id, userData) => {
+    const response = await api.put(`/users/${id}`, userData);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/users/${id}`);
+    return response.data;
+  }
+};
+
+// Alias for backward compatibility
+export const userAPI = usersAPI;
+
+// Hotels API
+export const hotelAPI = {
+  getAll: () => api.get('/hotels'),
+  getById: (id) => api.get(`/hotels/${id}`),
+  create: (hotelData) => api.post('/hotels', hotelData),
+  update: (id, hotelData) => api.put(`/hotels/${id}`, hotelData),
+  delete: (id) => api.delete(`/hotels/${id}`)
 };
 
 // Dashboard API
