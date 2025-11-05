@@ -4,8 +4,9 @@ const AuthContext = createContext(null)
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth debe usarse dentro de AuthProvider')
-  return context
+  // No lanzar error, devolver null si no hay contexto
+  // Esto permite usar el hook antes de que el usuario haga login
+  return context || { user: null }
 }
 
 export default AuthContext

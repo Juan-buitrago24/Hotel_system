@@ -28,8 +28,15 @@ const RoleGuard = ({
     return children;
   }
 
-  // Verificar si el rol del usuario está permitido
-  const hasPermission = allowedRoles.includes(user.role);
+  // Mapeo de roles para compatibilidad
+  // 'admin' en allowedRoles incluye: admin, hotel_admin, admin_global
+  const userRole = user.role;
+  let hasPermission = allowedRoles.includes(userRole);
+  
+  // Si se requiere 'admin', aceptar también hotel_admin y admin_global
+  if (!hasPermission && allowedRoles.includes('admin')) {
+    hasPermission = userRole === 'hotel_admin' || userRole === 'admin_global';
+  }
 
   if (!hasPermission) {
     if (showMessage) {
