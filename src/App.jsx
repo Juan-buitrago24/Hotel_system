@@ -107,48 +107,45 @@ const HotelManagementApp = () => {
 
   // Renderizar vistas de autenticación
   if (!currentUser) {
-    if (authView === 'register') {
-      return (
-        <RegisterPage 
-          onRegister={handleLogin}
-          onBackToLogin={() => setAuthView('login')}
-        />
-      );
-    }
-
-    if (authView === 'forgot-password') {
-      return (
-        <ForgotPasswordPage 
-          onBackToLogin={() => setAuthView('login')}
-        />
-      );
-    }
-
-    if (authView === 'reset-password' && resetToken) {
-      return (
-        <ResetPasswordPage 
-          token={resetToken}
-          onSuccess={handleResetSuccess}
-        />
-      );
-    }
-
-    if (authView === 'verify-account' && verifyToken) {
-      return (
-        <VerifyAccountPage 
-          token={verifyToken}
-          onSuccess={handleVerifySuccess}
-          onBackToLogin={() => setAuthView('login')}
-        />
-      );
-    }
-
     return (
-      <LoginPage 
-        onLogin={handleLogin}
-        onShowRegister={() => setAuthView('register')}
-        onShowForgotPassword={() => setAuthView('forgot-password')}
-      />
+      <ToastProvider>
+        <ToastContainer />
+        {authView === 'register' && (
+          <RegisterPage 
+            onRegister={handleLogin}
+            onBackToLogin={() => setAuthView('login')}
+          />
+        )}
+
+        {authView === 'forgot-password' && (
+          <ForgotPasswordPage 
+            onBackToLogin={() => setAuthView('login')}
+          />
+        )}
+
+        {authView === 'reset-password' && resetToken && (
+          <ResetPasswordPage 
+            token={resetToken}
+            onSuccess={handleResetSuccess}
+          />
+        )}
+
+        {authView === 'verify-account' && verifyToken && (
+          <VerifyAccountPage 
+            token={verifyToken}
+            onSuccess={handleVerifySuccess}
+            onBackToLogin={() => setAuthView('login')}
+          />
+        )}
+
+        {authView === 'login' && (
+          <LoginPage 
+            onLogin={handleLogin}
+            onShowRegister={() => setAuthView('register')}
+            onShowForgotPassword={() => setAuthView('forgot-password')}
+          />
+        )}
+      </ToastProvider>
     );
   }
 
