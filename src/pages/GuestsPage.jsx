@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, Edit2, Trash2, Mail, Phone, MapPin, Calendar, Search, FileText, Star } from 'lucide-react';
 import { guestAPI } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
 
 const GuestsPage = ({ user }) => {
+  const toast = useToast();
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -103,14 +105,16 @@ const GuestsPage = ({ user }) => {
     try {
       if (editingGuest) {
         await guestAPI.update(editingGuest._id, formData);
+        toast.success('Huésped actualizado exitosamente');
       } else {
         await guestAPI.create(formData);
+        toast.success('Huésped creado exitosamente');
       }
       handleCloseModal();
       loadGuests();
     } catch (error) {
       console.error('Error guardando huésped:', error);
-      alert('Error al guardar huésped: ' + (error.response?.data?.message || error.message));
+      toast.error(error.response?.data?.message || 'Error al guardar huésped');
     }
   };
 
@@ -119,10 +123,11 @@ const GuestsPage = ({ user }) => {
     
     try {
       await guestAPI.delete(guestId);
+      toast.success('Huésped eliminado exitosamente');
       loadGuests();
     } catch (error) {
       console.error('Error eliminando huésped:', error);
-      alert('Error al eliminar huésped: ' + (error.response?.data?.message || error.message));
+      toast.error(error.response?.data?.message || 'Error al eliminar huésped');
     }
   };
 
@@ -134,7 +139,7 @@ const GuestsPage = ({ user }) => {
       setShowHistory(true);
     } catch (error) {
       console.error('Error cargando historial:', error);
-      alert('Error al cargar historial');
+      toast.error('Error al cargar el historial');
     }
   };
 
