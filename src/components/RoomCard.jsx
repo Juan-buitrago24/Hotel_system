@@ -23,6 +23,9 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, userRole }) => {
     mantenimiento: 'Mantenimiento'
   };
 
+  // Verificar si el usuario es administrador
+  const isAdmin = userRole === 'hotel_admin' || userRole === 'admin' || userRole === 'admin_global';
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
       {/* Header */}
@@ -44,7 +47,7 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, userRole }) => {
         {/* Status */}
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">Estado:</span>
-          {userRole === 'admin' ? (
+          {isAdmin ? (
             <select
               value={room.status}
               onChange={(e) => onStatusChange(room._id, e.target.value)}
@@ -111,7 +114,7 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, userRole }) => {
         )}
 
         {/* Actions */}
-        {userRole === 'admin' && (
+        {isAdmin && (
           <div className="flex gap-2 pt-3 border-t">
             <button
               onClick={() => onEdit(room)}

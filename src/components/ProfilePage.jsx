@@ -159,7 +159,13 @@ const ProfilePage = ({ user, onUpdateUser, onClose }) => {
             <h3 className="font-semibold text-gray-700 mb-2">Información de Cuenta</h3>
             <div className="space-y-1 text-sm">
               <p><strong>Usuario:</strong> {user.username}</p>
-              <p><strong>Rol:</strong> {user.role === 'admin' ? 'Administrador' : 'Empleado'}</p>
+              <p><strong>Rol:</strong> {
+                user.role === 'admin_global' ? 'Administrador Global' :
+                user.role === 'hotel_admin' || user.role === 'admin' ? 'Administrador del Hotel' :
+                user.role === 'empleado' ? 'Empleado' :
+                user.role === 'cliente' ? 'Cliente' :
+                user.role
+              }</p>
               {user.verified !== undefined && (
                 <p>
                   <strong>Estado:</strong>{' '}

@@ -29,7 +29,7 @@ const ReservationsTable = ({ reservations, onStatusChange, onDelete, userRole })
                 reservation={reservation}
                 onStatusChange={onStatusChange}
                 onDelete={onDelete}
-                canDelete={userRole === 'admin'}
+                canDelete={userRole === 'hotel_admin' || userRole === 'admin' || userRole === 'admin_global'}
               />
             ))}
           </tbody>
