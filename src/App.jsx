@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import AuthContext from './context/AuthContext'
+import { ToastProvider } from './context/ToastContext'
+import ToastContainer from './components/ToastContainer'
 import LoginPage from './components/LoginPage'
 import RegisterPage from './components/RegisterPage'
 import ForgotPasswordPage from './components/ForgotPasswordPage'
@@ -151,11 +153,13 @@ const HotelManagementApp = () => {
   }
 
   return (
-    <AuthContext.Provider value={{ user: currentUser }}>
-      <div className="min-h-screen bg-gray-100">
-        <Header 
-          user={currentUser} 
-          onLogout={handleLogout}
+    <ToastProvider>
+      <AuthContext.Provider value={{ user: currentUser }}>
+        <ToastContainer />
+        <div className="min-h-screen bg-gray-100">
+          <Header 
+            user={currentUser} 
+            onLogout={handleLogout}
           onShowProfile={() => setShowProfile(true)}
         />
         <HotelBanner hotel={currentHotel} user={currentUser} />
@@ -177,7 +181,8 @@ const HotelManagementApp = () => {
           />
         )}
       </div>
-    </AuthContext.Provider>
+      </AuthContext.Provider>
+    </ToastProvider>
   );
 };
 
