@@ -108,6 +108,39 @@ export const hotelAPI = {
   delete: (id) => api.delete(`/hotels/${id}`)
 };
 
+// Guests API
+export const guestAPI = {
+  getAll: async () => {
+    const response = await api.get('/guests');
+    return response.data;
+  },
+  getById: async (id) => {
+    const response = await api.get(`/guests/${id}`);
+    return response.data;
+  },
+  create: async (guestData) => {
+    const response = await api.post('/guests', guestData);
+    return response.data;
+  },
+  update: async (id, guestData) => {
+    const response = await api.put(`/guests/${id}`, guestData);
+    return response.data;
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/guests/${id}`);
+    return response.data;
+  },
+  getHistory: async (id) => {
+    const response = await api.get(`/guests/${id}/history`);
+    return response.data;
+  },
+  searchByDocument: async (documentNumber) => {
+    const response = await api.get(`/guests/search/${documentNumber}`);
+    return response.data;
+  }
+};
+
+
 // Dashboard API
 export const getDashboardStats = async () => {
   try {
