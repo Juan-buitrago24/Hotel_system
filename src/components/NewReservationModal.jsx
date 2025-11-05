@@ -3,8 +3,10 @@ import InputField from './InputField'
 import Button from './Button'
 import { X, Search, User, Star } from 'lucide-react'
 import { guestAPI } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     guest: null, // ID del huésped si se selecciona uno existente
     guestName: '',
@@ -105,12 +107,12 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
     e.preventDefault();
     
     if (!formData.guestName || !formData.room || !formData.checkIn || !formData.checkOut) {
-      alert('Por favor complete los campos obligatorios');
+      toast.warning('Por favor complete los campos obligatorios');
       return;
     }
 
     if (new Date(formData.checkOut) <= new Date(formData.checkIn)) {
-      alert('La fecha de salida debe ser posterior a la fecha de entrada');
+      toast.warning('La fecha de salida debe ser posterior a la fecha de entrada');
       return;
     }
 

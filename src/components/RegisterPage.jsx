@@ -3,8 +3,10 @@ import { Hotel, User, Lock, Mail, UserPlus, Loader, ArrowLeft, AlertCircle } fro
 import InputField from './InputField'
 import Button from './Button'
 import { authAPI } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const RegisterPage = ({ onRegister, onBackToLogin }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -59,12 +61,13 @@ const RegisterPage = ({ onRegister, onBackToLogin }) => {
 
       const { token, user, message } = response.data;
       
-      // Mostrar información de verificación en lugar de alert
+      // Mostrar información de verificación
+      toast.success('Cuenta creada exitosamente. Esperando verificación del administrador.');
       setShowVerificationInfo(true);
     } catch (error) {
       console.error('Error en registro:', error);
       const message = error.response?.data?.message || 'Error al crear la cuenta';
-      alert(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

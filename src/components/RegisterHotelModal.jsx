@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { X, Hotel, User, Mail, Phone, MapPin, Lock, Building } from 'lucide-react';
 import Button from './Button';
 import InputField from './InputField';
+import { useToast } from '../context/ToastContext';
 
 const RegisterHotelModal = ({ isOpen, onClose, onSuccess }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     // Datos del hotel
     hotelName: '',
@@ -58,7 +60,8 @@ const RegisterHotelModal = ({ isOpen, onClose, onSuccess }) => {
         throw new Error(data.message || 'Error al registrar el hotel');
       }
 
-      alert(`✅ Hotel "${data.hotel.name}" registrado exitosamente!\n\nCredenciales del administrador:\nUsername: ${data.admin.username}\nEmail: ${data.admin.email}`);
+      toast.success(`Hotel "${data.hotel.name}" registrado exitosamente. Credenciales enviadas al administrador.`);
+      toast.info(`Username: ${data.admin.username}, Email: ${data.admin.email}`, 8000);
       
       // Resetear formulario
       setFormData({

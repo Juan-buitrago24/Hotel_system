@@ -3,14 +3,16 @@ import { Hotel, User, Lock, Loader } from 'lucide-react'
 import InputField from './InputField'
 import Button from './Button'
 import { authAPI } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword }) => {
+  const toast = useToast();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!credentials.username || !credentials.password) {
-      alert('Por favor ingresa usuario y contraseña');
+      toast.warning('Por favor ingresa usuario y contraseña');
       return;
     }
 
@@ -18,11 +20,12 @@ const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword }) => {
       setLoading(true);
       const response = await authAPI.login(credentials);
       const { token, user } = response.data;
+      toast.success('Inicio de sesión exitoso');
       onLogin(user, token);
     } catch (error) {
       console.error('Error de login:', error);
       const message = error.response?.data?.message || 'Usuario o contraseña incorrectos';
-      alert(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

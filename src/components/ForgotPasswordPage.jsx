@@ -3,8 +3,10 @@ import { Mail, ArrowLeft, Loader, CheckCircle } from 'lucide-react'
 import InputField from './InputField'
 import Button from './Button'
 import { authAPI } from '../services/api'
+import { useToast } from '../context/ToastContext'
 
 const ForgotPasswordPage = ({ onBackToLogin }) => {
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -12,7 +14,7 @@ const ForgotPasswordPage = ({ onBackToLogin }) => {
 
   const handleSubmit = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      alert('Por favor ingresa un email válido');
+      toast.warning('Por favor ingresa un email válido');
       return;
     }
 
@@ -20,6 +22,7 @@ const ForgotPasswordPage = ({ onBackToLogin }) => {
       setLoading(true);
       const response = await authAPI.forgotPassword(email);
       setSuccess(true);
+      toast.success('Se ha enviado un correo con instrucciones para restablecer tu contraseña');
       
       // En desarrollo, mostrar el token
       if (response.data.resetToken) {
