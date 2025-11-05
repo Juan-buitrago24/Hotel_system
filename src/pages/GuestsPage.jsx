@@ -4,6 +4,7 @@ import { guestAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
+import { SkeletonTable } from '../components/SkeletonLoader';
 
 const GuestsPage = ({ user }) => {
   const toast = useToast();
@@ -153,6 +154,39 @@ const GuestsPage = ({ user }) => {
 
   const canEdit = user?.role === 'hotel_admin' || user?.role === 'admin_global' || user?.role === 'empleado';
   const canDelete = user?.role === 'hotel_admin' || user?.role === 'admin_global';
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-64 rounded mb-2"></div>
+            <div className="skeleton h-4 w-80 rounded"></div>
+          </div>
+          <div className="skeleton h-10 w-40 rounded-lg"></div>
+        </div>
+
+        {/* Search Skeleton */}
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="skeleton h-10 w-full rounded-lg"></div>
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white rounded-lg shadow-sm p-4">
+              <div className="skeleton h-4 w-24 rounded mb-2"></div>
+              <div className="skeleton h-8 w-16 rounded"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Table Skeleton */}
+        <SkeletonTable rows={8} columns={8} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

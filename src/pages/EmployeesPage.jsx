@@ -4,6 +4,7 @@ import { userAPI } from "../services/api";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
 import { useToast } from '../context/ToastContext';
+import { SkeletonTable } from '../components/SkeletonLoader';
 
 const EmployeesManagementPage = ({ user }) => {
   const toast = useToast();
@@ -126,6 +127,29 @@ const EmployeesManagementPage = ({ user }) => {
     emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     emp.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="skeleton h-8 w-64 rounded mb-2"></div>
+            <div className="skeleton h-4 w-80 rounded"></div>
+          </div>
+          <div className="skeleton h-10 w-40 rounded-lg"></div>
+        </div>
+
+        {/* Search Skeleton */}
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="skeleton h-10 w-full rounded-lg"></div>
+        </div>
+
+        {/* Table Skeleton */}
+        <SkeletonTable rows={8} columns={6} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
