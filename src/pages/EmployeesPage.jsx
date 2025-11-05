@@ -21,34 +21,24 @@ const EmployeesManagementPage = ({ user }) => {
   });
 
   useEffect(() => {
-    console.log('🎯 EmployeesPage montado, usuario:', user);
     if (user && user.hotel) {
       loadEmployees();
-    } else {
-      console.warn('⚠️ Usuario o hotel no definido');
     }
   }, [user]);
 
   const loadEmployees = async () => {
-    console.log('📞 Llamando a loadEmployees...');
     try {
       setLoading(true);
       setError(null);
       const data = await userAPI.getAll();
       
-      console.log('🔍 Respuesta del backend:', data);
-      console.log('👤 Usuario actual:', user);
-      
       // Filtrar solo empleados (el backend ya filtra por hotel)
       const hotelEmployees = data.filter(u => u.role === 'empleado');
       
-      console.log('✅ Empleados filtrados:', hotelEmployees.length, hotelEmployees);
-      
       setEmployees(hotelEmployees);
     } catch (error) {
-      console.error('❌ Error cargando empleados:', error);
+      console.error('Error cargando empleados:', error);
       setError(error.message || 'Error al cargar empleados');
-      alert('ERROR al cargar empleados: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,13 @@
 import React from 'react'
 
-const InputField = ({ label, type = 'text', value, onChange, icon: Icon, as = 'input', children, ...props }) => {
-  const Component = as;
+const InputField = ({ label, type = 'text', value, onChange, icon: Icon, as, children, ...props }) => {
+  // Si el tipo es 'select', usar select como componente
+  const Component = as || (type === 'select' ? 'select' : 'input');
+  
+  // No pasar 'type' a select elements
+  const componentProps = Component === 'select' 
+    ? { value, onChange, ...props }
+    : { type, value, onChange, ...props };
   
   return (
     <div>
@@ -10,11 +16,8 @@ const InputField = ({ label, type = 'text', value, onChange, icon: Icon, as = 'i
         {label}
       </label>
       <Component
-        type={type}
-        value={value}
-        onChange={onChange}
         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-        {...props}
+        {...componentProps}
       >
         {children}
       </Component>
