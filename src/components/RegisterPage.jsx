@@ -42,11 +42,20 @@ const RegisterPage = ({ onRegister, onBackToLogin }) => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    
+    // Retornar los errores también para usarlos inmediatamente
+    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
+    const validation = validateForm();
+    
+    if (!validation.isValid) {
+      // Mostrar primer error encontrado
+      const firstError = Object.values(validation.errors)[0];
+      if (firstError) {
+        toast.warning(firstError);
+      }
       return;
     }
 
@@ -56,14 +65,19 @@ const RegisterPage = ({ onRegister, onBackToLogin }) => {
         username: formData.username,
         password: formData.password,
         name: formData.name,
-        email: formData.email || undefined
+        email: formData.email || undefined,
+        role: 'cliente' // Forzar rol cliente para registro público
       });
 
       const { token, user, message } = response.data;
       
       // Mostrar información de verificación
-      toast.success('Cuenta creada exitosamente. Esperando verificación del administrador.');
-      setShowVerificationInfo(true);
+      toast.success('Cuenta creada exitosamente. Ya puedes iniciar sesión.');
+      
+      // Redirigir al login después de 2 segundos
+      setTimeout(() => {
+        onBackToLogin();
+      }, 2000);
     } catch (error) {
       console.error('Error en registro:', error);
       const message = error.response?.data?.message || 'Error al crear la cuenta';
@@ -188,8 +202,12 @@ const RegisterPage = ({ onRegister, onBackToLogin }) => {
         </button>
 
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-            <UserPlus className="w-8 h-8 text-purple-600" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img 
+              src="/Logo Hotel Manager.jpg" 
+              alt="Hotel Manager Logo" 
+              className="h-20 w-auto object-contain"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-800">Crear Cuenta</h1>
           <p className="text-gray-600 mt-2">Únete al sistema de gestión hotelera</p>

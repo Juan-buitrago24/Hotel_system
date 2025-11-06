@@ -73,30 +73,19 @@ export const register = async (req, res) => {
       }
     }
 
+    // IMPORTANTE: Registro público solo puede crear clientes
+    // Otros roles deben ser creados por administradores
+    const userRole = role === 'cliente' ? 'cliente' : 'cliente';
+
     const user = await User.create({
       username,
       password,
       name,
       email,
-      role: role || 'empleado',
-      verified: !email // Si no hay email, se marca como verificado automáticamente
+      role: userRole,
+      verified: true, // Clientes se verifican automáticamente
+      active: true // Clientes están activos por defecto
     });
-
-    // Si hay email, generar token de verificación
-    if (email) {
-      const verificationToken = user.createVerificationToken();
-      await user.save();
-      
-      // Enviar email de verificación con Resend
-      try {
-        await sendVerificationEmail(email, verificationToken, name || username);
-        console.log(`✅ Email de verificación enviado a ${email}`);
-      } catch (emailError) {
-        console.error('❌ Error al enviar email de verificación:', emailError);
-        // No fallar el registro si el email falla
-        console.log(`⚠️ Token de verificación (fallback): ${verificationToken}`);
-      }
-    }
 
     const token = generateToken(user._id);
 
@@ -110,7 +99,7 @@ export const register = async (req, res) => {
         email: user.email,
         verified: user.verified
       },
-      message: email ? 'Usuario creado. Por favor verifica tu email.' : 'Usuario creado exitosamente.'
+      message: 'Cuenta de cliente creada exitosamente. Ya puedes iniciar sesión.'
     });
   } catch (error) {
     console.error(error);

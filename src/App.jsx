@@ -157,27 +157,77 @@ const HotelManagementApp = () => {
           <Header 
             user={currentUser} 
             onLogout={handleLogout}
-          onShowProfile={() => setShowProfile(true)}
-        />
-        <HotelBanner hotel={currentHotel} user={currentUser} />
-        <Navigation activeView={currentView} onViewChange={setCurrentView} />
-        <main className="max-w-7xl mx-auto p-4 lg:p-6">
-          {currentView === 'dashboard' && <DashboardPage />}
-          {currentView === 'reservations' && <ReservationsPage />}
-          {currentView === 'rooms' && <RoomsPage />}
-          {currentView === 'hotels' && <HotelsManagementPage />}
-          {currentView === 'guests' && <GuestsPage user={currentUser} />}
-          {currentView === 'employees' && <EmployeesPage user={currentUser} />}
-        </main>
-
-        {showProfile && (
-          <ProfilePage 
-            user={currentUser}
-            onUpdateUser={handleUpdateUser}
-            onClose={() => setShowProfile(false)}
+            onShowProfile={() => setShowProfile(true)}
           />
-        )}
-      </div>
+          
+          {/* Vista para CLIENTES */}
+          {currentUser.role === 'cliente' ? (
+            <>
+              <div className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 lg:px-6">
+                  <div className="flex gap-4 py-4">
+                    <button
+                      onClick={() => setCurrentView('my-reservations')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        currentView === 'my-reservations'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Mis Reservas
+                    </button>
+                    <button
+                      onClick={() => setCurrentView('new-reservation')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        currentView === 'new-reservation'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Nueva Reserva
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <main className="max-w-7xl mx-auto p-4 lg:p-6">
+                {currentView === 'my-reservations' && (
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-2xl font-bold mb-4">Mis Reservas</h2>
+                    <p className="text-gray-600">Aquí verás tus reservas próximamente...</p>
+                  </div>
+                )}
+                {currentView === 'new-reservation' && (
+                  <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h2 className="text-2xl font-bold mb-4">Nueva Reserva</h2>
+                    <p className="text-gray-600">Formulario de reserva próximamente...</p>
+                  </div>
+                )}
+              </main>
+            </>
+          ) : (
+            /* Vista para STAFF (admins y empleados) */
+            <>
+              <HotelBanner hotel={currentHotel} user={currentUser} />
+              <Navigation activeView={currentView} onViewChange={setCurrentView} />
+              <main className="max-w-7xl mx-auto p-4 lg:p-6">
+                {currentView === 'dashboard' && <DashboardPage />}
+                {currentView === 'reservations' && <ReservationsPage />}
+                {currentView === 'rooms' && <RoomsPage />}
+                {currentView === 'hotels' && <HotelsManagementPage />}
+                {currentView === 'guests' && <GuestsPage user={currentUser} />}
+                {currentView === 'employees' && <EmployeesPage user={currentUser} />}
+              </main>
+            </>
+          )}
+
+          {showProfile && (
+            <ProfilePage 
+              user={currentUser}
+              onUpdateUser={handleUpdateUser}
+              onClose={() => setShowProfile(false)}
+            />
+          )}
+        </div>
       </AuthContext.Provider>
     </ToastProvider>
   );
