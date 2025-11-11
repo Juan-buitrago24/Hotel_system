@@ -58,6 +58,10 @@ const reservationSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
+  extraServices: [{
+    type: String,
+    trim: true
+  }],
   notes: {
     type: String,
     trim: true
