@@ -15,12 +15,12 @@ const router = express.Router();
 // Rutas públicas
 router.post('/register', registerHotel);
 
-// Rutas protegidas - cualquier usuario autenticado
+// Rutas protegidas - cualquier usuario autenticado puede ver hoteles
+router.get('/', protect, getAllHotels); // Clientes pueden ver hoteles activos
 router.get('/current', protect, getCurrentHotel);
 router.get('/:id', protect, getHotelById);
 
 // Rutas solo para admin_global
-router.get('/', protect, requireAdminGlobal, getAllHotels);
 router.put('/:id', protect, requireAdminGlobal, updateHotel);
 router.delete('/:id', protect, requireAdminGlobal, deleteHotel);
 

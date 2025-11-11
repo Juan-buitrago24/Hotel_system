@@ -19,8 +19,8 @@ export const filterByHotel = async (req, res, next) => {
       req.hotelFilter = {}; // Sin filtro, puede ver todos
       req.isAdminGlobal = true;
     } else if (user.role === 'cliente') {
-      // Clientes no tienen acceso a estos endpoints
-      req.hotelFilter = { _id: null }; // No verán nada
+      // Clientes pueden ver todas las habitaciones y hoteles (para buscar y reservar)
+      req.hotelFilter = {}; // Sin filtro, pueden ver todos para búsqueda
       req.isCliente = true;
     } else {
       // Para hotel_admin y empleado, verificar que tengan hotel asignado
@@ -63,11 +63,17 @@ export const assignHotel = async (req, res, next) => {
       });
     }
 
-    // Clientes no pueden crear estos recursos
+    // Clientes pueden especificar el hotel en reservas
     if (user.role === 'cliente') {
-      return res.status(403).json({
-        message: 'Los clientes no tienen permiso para crear este recurso'
-      });
+      if (!req.body.hotel) {
+        return res.status(400).json({
+          message: 'Debe especificar el hotel para la reserva'
+        });
+      }
+      // Los clientes pueden crear reservas, no bloquear
+      req.isCliente = true;
+      req.currentHotel = req.body.hotel;
+      return next();
     }
 
     // Para otros roles, asignar su hotel automáticamente
