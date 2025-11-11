@@ -54,8 +54,28 @@ const roomSchema = new mongoose.Schema({
     trim: true
   },
   images: [{
-    type: String,
-    trim: true
+    url: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    publicId: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    isPrimary: {
+      type: Boolean,
+      default: false
+    },
+    order: {
+      type: Number,
+      default: 0
+    },
+    uploadedAt: {
+      type: Date,
+      default: Date.now
+    }
   }]
 }, {
   timestamps: true
