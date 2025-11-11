@@ -69,7 +69,11 @@ export const reservationsAPI = {
   create: (reservationData) => api.post('/reservations', reservationData),
   update: (id, reservationData) => api.put(`/reservations/${id}`, reservationData),
   delete: (id) => api.delete(`/reservations/${id}`),
-  updateStatus: (id, status) => api.patch(`/reservations/${id}/status`, { status })
+  updateStatus: (id, status) => api.patch(`/reservations/${id}/status`, { status }),
+  checkExtensionAvailability: (id, newCheckOutDate) => 
+    api.post(`/reservations/${id}/check-extension`, { newCheckOutDate }),
+  extendStay: (id, extensionData) => 
+    api.post(`/reservations/${id}/extend`, extensionData)
 };
 
 // Users API
