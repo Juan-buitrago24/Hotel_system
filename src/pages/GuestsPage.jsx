@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, Edit2, Trash2, Mail, Phone, MapPin, Calendar, Search, FileText, Star } from 'lucide-react';
-import { guestAPI } from '../services/api';
+import { guestAPI, reservationsAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Button from '../components/Button';
 import InputField from '../components/InputField';
+import AddServicesModal from '../components/AddServicesModal';
 import { SkeletonTable } from '../components/SkeletonLoader';
+import { EXTRA_SERVICES } from '../constants/data';
 
 const GuestsPage = ({ user }) => {
   const toast = useToast();
@@ -17,6 +19,8 @@ const GuestsPage = ({ user }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [guestHistory, setGuestHistory] = useState([]);
   const [selectedGuest, setSelectedGuest] = useState(null);
+  const [showServicesModal, setShowServicesModal] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -143,6 +147,69 @@ const GuestsPage = ({ user }) => {
       toast.error('Error al cargar el historial');
     }
   };
+
+  const handleAddServicesFromGuest = async (guest) => {
+    try {
+      // Buscar la reserva activa del huésped
+      const allReservations = await reservationsAPI.getAll();
+      const activeReservation = allReservations.find(
+        (r) => r.guest?._id === guest._id && 
+               (r.status === 'en_curso' || r.status === 'confirmada')
+      );
+
+      if (!activeReservation) {
+        toast.error('No se encontró una reserva activa para este huésped');
+        return;
+      }
+
+      setSelectedReservation(activeReservation);
+      setShowServicesModal(true);
+    } catch (error) {
+      console.error('Error buscando reserva:', error);
+      toast.error('Error al buscar la reserva del huésped');
+    }
+  };
+
+  const handleSaveServices = async (reservationId, extraServices, additionalNotes) => {
+    try {
+      const reservation = selectedReservation;
+      
+      // Calcular el total de servicios
+      const servicesTotal = extraServices.reduce((sum, serviceId) => {
+        const service = EXTRA_SERVICES.find(s => s.id === serviceId);
+        return sum + (service?.price || 0);
+      }, 0);
+
+      // Calcular nuevo total
+      const roomTotal = reservation.totalPrice - (reservation.extraServices?.reduce((sum, serviceId) => {
+        const service = EXTRA_SERVICES.find(s => s.id === serviceId);
+        return sum + (service?.price || 0);
+      }, 0) || 0);
+      
+      const newTotal = roomTotal + servicesTotal;
+
+      // Preparar notas con información de servicios agregados
+      let notesUpdate = reservation.notes || '';
+      if (additionalNotes) {
+        const timestamp = new Date().toLocaleString('es-CO');
+        notesUpdate += `\n[${timestamp} - Servicios agregados]: ${additionalNotes}`;
+      }
+
+      await reservationsAPI.update(reservationId, {
+        extraServices,
+        totalPrice: newTotal,
+        notes: notesUpdate
+      });
+
+      toast.success(`Servicios actualizados. Nuevo total: $${newTotal.toFixed(2)}`);
+      setShowServicesModal(false);
+      setSelectedReservation(null);
+    } catch (error) {
+      console.error('Error actualizando servicios:', error);
+      toast.error('Error al actualizar los servicios');
+    }
+  };
+
 
   const filteredGuests = guests.filter(g =>
     g.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -318,8 +385,18 @@ const GuestsPage = ({ user }) => {
                     </button>
                     {canEdit && (
                       <button
-                        onClick={() => handleOpenModal(guest)}
+                        onClick={() => handleAddServicesFromGuest(guest)}
                         className="text-blue-600 hover:text-blue-900 mr-4 inline-flex items-center"
+                        title="Agregar servicios"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Servicios
+                      </button>
+                    )}
+                    {canEdit && (
+                      <button
+                        onClick={() => handleOpenModal(guest)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-4 inline-flex items-center"
                       >
                         <Edit2 className="w-4 h-4 mr-1" />
                         Editar
@@ -584,6 +661,18 @@ const GuestsPage = ({ user }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal Add Services */}
+      {showServicesModal && selectedReservation && (
+        <AddServicesModal
+          reservation={selectedReservation}
+          onClose={() => {
+            setShowServicesModal(false);
+            setSelectedReservation(null);
+          }}
+          onSave={handleSaveServices}
+        />
       )}
     </div>
   );

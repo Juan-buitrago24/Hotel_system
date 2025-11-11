@@ -4,6 +4,7 @@ import { reservationsAPI, roomsAPI } from '../services/api'
 import CalendarView from '../components/CalendarView'
 import ReservationsTable from '../components/ReservationsTable'
 import NewReservationModal from '../components/NewReservationModal'
+import AddServicesModal from '../components/AddServicesModal'
 import Button from '../components/Button'
 import { Lock } from 'lucide-react'
 import { useToast } from '../context/ToastContext'
@@ -16,6 +17,8 @@ const ReservationsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
+  const [showServicesModal, setShowServicesModal] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,8 +63,37 @@ const ReservationsPage = () => {
       await fetchData();
       toast.success('Reserva eliminada exitosamente');
     } catch (error) {
-      console.error('Error al eliminar:', error);
+      console.error('Error al eliminar reserva:', error);
       const message = error.response?.data?.message || 'Error al eliminar la reserva';
+      toast.error(message);
+    }
+  };
+
+  const handleOpenServicesModal = (reservation) => {
+    setSelectedReservation(reservation);
+    setShowServicesModal(true);
+  };
+
+  const handleSaveServices = async (data) => {
+    try {
+      // Actualizar reserva con nuevos servicios y total
+      await reservationsAPI.update(data.reservationId, {
+        extraServices: data.extraServices,
+        totalPrice: data.newTotal,
+        notes: data.additionalNotes 
+          ? `${selectedReservation.notes || ''}\n[Servicios agregados]: ${data.additionalNotes}`.trim()
+          : selectedReservation.notes
+      });
+
+      await fetchData();
+      setShowServicesModal(false);
+      setSelectedReservation(null);
+      
+      const servicesCount = data.extraServices.length;
+      toast.success(`Servicios actualizados. Nuevo total: $${data.newTotal.toLocaleString()}`);
+    } catch (error) {
+      console.error('Error al actualizar servicios:', error);
+      const message = error.response?.data?.message || 'Error al actualizar los servicios';
       toast.error(message);
     }
   };
@@ -121,13 +153,14 @@ const ReservationsPage = () => {
       <CalendarView
         selectedDate={selectedDate}
         onDateChange={setSelectedDate}
-        reservations={reservations}
+        reservations={reservations.filter(r => r.status !== 'cancelada')}
       />
 
       <ReservationsTable
         reservations={reservations}
         onStatusChange={handleStatusChange}
         onDelete={handleDeleteReservation}
+        onAddServices={handleOpenServicesModal}
         userRole={user.role}
       />
 
@@ -136,6 +169,16 @@ const ReservationsPage = () => {
         onClose={() => setShowModal(false)}
         onSubmit={handleCreateReservation}
         rooms={rooms}
+      />
+
+      <AddServicesModal
+        isOpen={showServicesModal}
+        onClose={() => {
+          setShowServicesModal(false);
+          setSelectedReservation(null);
+        }}
+        reservation={selectedReservation}
+        onSave={handleSaveServices}
       />
     </div>
   );

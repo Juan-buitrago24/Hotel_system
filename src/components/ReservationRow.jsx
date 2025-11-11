@@ -1,8 +1,8 @@
 import React from 'react'
 import { getStatusColor } from '../utils/helpers'
-import { Trash2, Star } from 'lucide-react'
+import { Trash2, Star, Plus } from 'lucide-react'
 
-const ReservationRow = ({ reservation, onStatusChange, onDelete, canDelete }) => {
+const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, canDelete }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
       year: 'numeric',
@@ -57,18 +57,34 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, canDelete }) =>
         </select>
       </td>
       <td className="py-3 px-4 font-semibold text-green-600">
-        ${reservation.totalPrice?.toFixed(2)}
+        <div>
+          <div>${reservation.totalPrice?.toFixed(2)}</div>
+          {reservation.extraServices && reservation.extraServices.length > 0 && (
+            <div className="text-xs text-blue-600">
+              +{reservation.extraServices.length} servicio{reservation.extraServices.length !== 1 ? 's' : ''}
+            </div>
+          )}
+        </div>
       </td>
       <td className="py-3 px-4">
-        {canDelete && (
+        <div className="flex gap-2">
           <button
-            onClick={() => onDelete(reservation._id)}
-            className="text-red-600 hover:text-red-800 transition-colors p-2 rounded hover:bg-red-50"
-            title="Eliminar reserva"
+            onClick={() => onAddServices(reservation)}
+            className="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded hover:bg-blue-50"
+            title="Agregar servicios extras"
           >
-            <Trash2 className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
           </button>
-        )}
+          {canDelete && (
+            <button
+              onClick={() => onDelete(reservation._id)}
+              className="text-red-600 hover:text-red-800 transition-colors p-2 rounded hover:bg-red-50"
+              title="Eliminar reserva"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </td>
     </tr>
   );
