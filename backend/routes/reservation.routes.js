@@ -6,7 +6,9 @@ import {
   createReservation,
   updateReservation,
   deleteReservation,
-  updateReservationStatus
+  updateReservationStatus,
+  checkExtensionAvailability,
+  extendStay
 } from '../controllers/reservation.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { filterByHotel, assignHotel } from '../middleware/hotel.middleware.js';
@@ -32,5 +34,9 @@ router.route('/:id')
   .delete(authorize('hotel_admin', 'admin_global'), deleteReservation);
 
 router.patch('/:id/status', updateReservationStatus);
+
+// Rutas para extensión de estadía
+router.post('/:id/check-extension', checkExtensionAvailability);
+router.post('/:id/extend', extendStay);
 
 export default router;

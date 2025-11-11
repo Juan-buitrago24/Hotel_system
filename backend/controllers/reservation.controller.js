@@ -14,7 +14,7 @@ export const getReservations = async (req, res) => {
     if (checkOut) filter.checkOut = { $lte: new Date(checkOut) };
 
     const reservations = await Reservation.find(filter)
-      .populate('room', 'number type')
+      .populate('room')
       .populate('guest', 'firstName lastName documentNumber isVIP')
       .populate('createdBy', 'name username')
       .sort({ checkIn: -1 });
@@ -200,5 +200,146 @@ export const updateReservationStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al actualizar el estado' });
+  }
+};
+
+// Verificar disponibilidad para extensión de estadía
+export const checkExtensionAvailability = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newCheckOutDate } = req.body;
+
+    const reservation = await Reservation.findById(id);
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reserva no encontrada' });
+    }
+
+    // Buscar reservas que puedan solaparse con la extensión
+    const conflictingReservations = await Reservation.find({
+      room: reservation.room,
+      _id: { $ne: id }, // Excluir la reserva actual
+      status: { $in: ['pendiente', 'confirmada', 'en_curso'] },
+      $or: [
+        // Reservas que comienzan durante la extensión
+        {
+          checkIn: { 
+            $gte: new Date(reservation.checkOut), 
+            $lt: new Date(newCheckOutDate) 
+          }
+        },
+        // Reservas que ya están activas en las fechas de extensión
+        {
+          checkIn: { $lt: new Date(reservation.checkOut) },
+          checkOut: { $gt: new Date(reservation.checkOut) }
+        }
+      ]
+    });
+
+    const available = conflictingReservations.length === 0;
+
+    res.json({
+      available,
+      conflictingReservations: available ? [] : conflictingReservations.map(r => ({
+        checkIn: r.checkIn,
+        checkOut: r.checkOut,
+        guestName: r.guestName
+      }))
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al verificar disponibilidad' });
+  }
+};
+
+// Extender estadía
+export const extendStay = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      extensionType, 
+      newCheckOutDate, 
+      lateCheckoutHours, 
+      additionalCost, 
+      notes,
+      description 
+    } = req.body;
+
+    const reservation = await Reservation.findById(id).populate('room');
+    
+    if (!reservation) {
+      return res.status(404).json({ message: 'Reserva no encontrada' });
+    }
+
+    // Verificar que la reserva esté activa
+    if (!['confirmada', 'en_curso'].includes(reservation.status)) {
+      return res.status(400).json({ 
+        message: 'Solo se pueden extender reservas confirmadas o en curso' 
+      });
+    }
+
+    // Crear nota de extensión con timestamp
+    const timestamp = new Date().toLocaleString('es-CO');
+    let extensionNote = `\n[${timestamp} - Extensión de estadía]: ${description}`;
+    
+    if (extensionType === 'days') {
+      extensionNote += ` | Nueva fecha de salida: ${new Date(newCheckOutDate).toLocaleDateString('es-ES')}`;
+      
+      // Verificar disponibilidad antes de extender
+      const conflictingReservations = await Reservation.find({
+        room: reservation.room._id,
+        _id: { $ne: id },
+        status: { $in: ['pendiente', 'confirmada', 'en_curso'] },
+        $or: [
+          {
+            checkIn: { 
+              $gte: new Date(reservation.checkOut), 
+              $lt: new Date(newCheckOutDate) 
+            }
+          },
+          {
+            checkIn: { $lt: new Date(reservation.checkOut) },
+            checkOut: { $gt: new Date(reservation.checkOut) }
+          }
+        ]
+      });
+
+      if (conflictingReservations.length > 0) {
+        return res.status(400).json({ 
+          message: 'La habitación no está disponible para las fechas seleccionadas',
+          conflictingReservations
+        });
+      }
+
+      // Actualizar fecha de checkout
+      reservation.checkOut = new Date(newCheckOutDate);
+    } else if (extensionType === 'hours') {
+      extensionNote += ` | Late checkout de ${lateCheckoutHours} horas`;
+      // Para late checkout, no cambiamos la fecha, solo agregamos nota
+    }
+
+    // Agregar costo adicional (redondeado)
+    reservation.totalPrice = Math.round(reservation.totalPrice + additionalCost);
+
+    // Agregar notas
+    if (notes) {
+      extensionNote += ` | Notas: ${notes}`;
+    }
+    reservation.notes = (reservation.notes || '') + extensionNote;
+
+    // Guardar cambios
+    await reservation.save();
+
+    // Populate para respuesta
+    await reservation.populate('room', 'number type price');
+    await reservation.populate('guest', 'firstName lastName documentNumber');
+
+    res.json({
+      success: true,
+      message: 'Estadía extendida exitosamente',
+      reservation
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al extender la estadía' });
   }
 };
