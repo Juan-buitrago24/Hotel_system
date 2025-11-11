@@ -5,6 +5,7 @@ import CalendarView from '../components/CalendarView'
 import ReservationsTable from '../components/ReservationsTable'
 import NewReservationModal from '../components/NewReservationModal'
 import AddServicesModal from '../components/AddServicesModal'
+import ExtendStayModal from '../components/ExtendStayModal'
 import Button from '../components/Button'
 import { Lock } from 'lucide-react'
 import { useToast } from '../context/ToastContext'
@@ -18,6 +19,7 @@ const ReservationsPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
   const [showServicesModal, setShowServicesModal] = useState(false);
+  const [showExtendModal, setShowExtendModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -98,6 +100,25 @@ const ReservationsPage = () => {
     }
   };
 
+  const handleOpenExtendModal = (reservation) => {
+    setSelectedReservation(reservation);
+    setShowExtendModal(true);
+  };
+
+  const handleExtendStay = async (extensionData) => {
+    try {
+      const response = await reservationsAPI.extendStay(extensionData.reservationId, extensionData);
+      
+      toast.success('Estadía extendida exitosamente');
+      setShowExtendModal(false);
+      setSelectedReservation(null);
+      await fetchData();
+    } catch (error) {
+      console.error('Error extending stay:', error);
+      toast.error(error.response?.data?.message || 'Error al extender la estadía');
+    }
+  };
+
   const handleStatusChange = async (id, newStatus) => {
     try {
       await reservationsAPI.updateStatus(id, newStatus);
@@ -107,6 +128,18 @@ const ReservationsPage = () => {
       console.error('Error al actualizar estado:', error);
       toast.error('Error al actualizar el estado');
     }
+  };
+
+  const canExtend = (reservation) => {
+    // Solo permite extender reservas confirmadas o en curso
+    if (!['confirmada', 'en_curso'].includes(reservation.status)) {
+      return false;
+    }
+    // Solo antes de la fecha de salida
+    const checkOut = new Date(reservation.checkOut);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return checkOut >= today;
   };
 
   if (loading) {
@@ -161,6 +194,8 @@ const ReservationsPage = () => {
         onStatusChange={handleStatusChange}
         onDelete={handleDeleteReservation}
         onAddServices={handleOpenServicesModal}
+        onExtendStay={handleOpenExtendModal}
+        canExtend={canExtend}
         userRole={user.role}
       />
 
@@ -179,6 +214,16 @@ const ReservationsPage = () => {
         }}
         reservation={selectedReservation}
         onSave={handleSaveServices}
+      />
+
+      <ExtendStayModal
+        isOpen={showExtendModal}
+        onClose={() => {
+          setShowExtendModal(false);
+          setSelectedReservation(null);
+        }}
+        reservation={selectedReservation}
+        onSave={handleExtendStay}
       />
     </div>
   );

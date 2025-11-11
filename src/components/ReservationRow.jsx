@@ -1,8 +1,8 @@
 import React from 'react'
 import { getStatusColor } from '../utils/helpers'
-import { Trash2, Star, Plus } from 'lucide-react'
+import { Trash2, Star, Plus, Calendar } from 'lucide-react'
 
-const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, canDelete }) => {
+const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, onExtendStay, canExtend, canDelete }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
       year: 'numeric',
@@ -75,6 +75,15 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, 
           >
             <Plus className="w-4 h-4" />
           </button>
+          {canExtend && canExtend(reservation) && (
+            <button
+              onClick={() => onExtendStay(reservation)}
+              className="text-purple-600 hover:text-purple-800 transition-colors p-2 rounded hover:bg-purple-50"
+              title="Extender estadía"
+            >
+              <Calendar className="w-4 h-4" />
+            </button>
+          )}
           {canDelete && (
             <button
               onClick={() => onDelete(reservation._id)}
