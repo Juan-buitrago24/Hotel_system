@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { reservationsAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Button from '../components/Button';
+import ExtendStayModal from '../components/ExtendStayModal';
 import { SkeletonGrid } from '../components/SkeletonLoader';
 import { EXTRA_SERVICES } from '../constants/amenities';
 
@@ -9,6 +10,8 @@ export default function MyReservationsPage({ currentUser }) {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('upcoming'); // 'upcoming', 'past', 'all'
+  const [showExtendModal, setShowExtendModal] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
   const toast = useToast(); // Corregido: no desestructurar
 
   useEffect(() => {
@@ -66,6 +69,25 @@ export default function MyReservationsPage({ currentUser }) {
     } catch (error) {
       console.error('Error cancelling reservation:', error);
       toast.error('Error al cancelar la reserva');
+    }
+  };
+
+  const handleOpenExtendModal = (reservation) => {
+    setSelectedReservation(reservation);
+    setShowExtendModal(true);
+  };
+
+  const handleExtendStay = async (extensionData) => {
+    try {
+      const response = await reservationsAPI.extendStay(extensionData.reservationId, extensionData);
+      
+      toast.success('¡Estadía extendida exitosamente!');
+      setShowExtendModal(false);
+      setSelectedReservation(null);
+      loadReservations(); // Reload reservations
+    } catch (error) {
+      console.error('Error extending stay:', error);
+      toast.error(error.response?.data?.message || 'Error al extender la estadía');
     }
   };
 
@@ -137,6 +159,18 @@ export default function MyReservationsPage({ currentUser }) {
     const checkIn = new Date(reservation.checkIn);
     const today = new Date();
     return checkIn > today;
+  };
+
+  // Check if reservation can be extended
+  const canExtend = (reservation) => {
+    // Solo puede extender reservas confirmadas o en curso
+    if (!['confirmada', 'en_curso'].includes(reservation.status)) {
+      return false;
+    }
+    // Y que no haya pasado el checkout
+    const checkOut = new Date(reservation.checkOut);
+    const today = new Date();
+    return checkOut >= today;
   };
 
   if (loading) {
@@ -302,21 +336,45 @@ export default function MyReservationsPage({ currentUser }) {
                       <div className="text-sm text-gray-600">Total</div>
                     </div>
 
-                    {canCancel(reservation) && (
-                      <Button
-                        onClick={() => handleCancelReservation(reservation._id)}
-                        variant="danger"
-                        className="text-sm"
-                      >
-                        Cancelar Reserva
-                      </Button>
-                    )}
+                    <div className="flex flex-col gap-2 w-full">
+                      {canExtend(reservation) && (
+                        <Button
+                          onClick={() => handleOpenExtendModal(reservation)}
+                          className="text-sm bg-purple-600 hover:bg-purple-700"
+                        >
+                          📅 Extender Estadía
+                        </Button>
+                      )}
+                      
+                      {canCancel(reservation) && (
+                        <Button
+                          onClick={() => handleCancelReservation(reservation._id)}
+                          variant="danger"
+                          className="text-sm"
+                        >
+                          Cancelar Reserva
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
+      )}
+
+      {/* Extend Stay Modal */}
+      {showExtendModal && selectedReservation && (
+        <ExtendStayModal
+          isOpen={showExtendModal}
+          onClose={() => {
+            setShowExtendModal(false);
+            setSelectedReservation(null);
+          }}
+          reservation={selectedReservation}
+          onSave={handleExtendStay}
+        />
       )}
     </div>
   );
