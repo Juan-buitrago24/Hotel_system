@@ -1,8 +1,8 @@
 import React from 'react';
-import { Bed, Users, DollarSign, Edit, Trash2, MapPin, Plus } from 'lucide-react';
+import { Bed, Users, DollarSign, Edit, Trash2, MapPin, Plus, Calendar } from 'lucide-react';
 import { getAmenityIcon, getAmenityLabel } from '../utils/amenitiesHelper';
 
-const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, userRole }) => {
+const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExtendStay, canExtend, userRole }) => {
   const statusColors = {
     disponible: 'bg-green-100 text-green-800 border-green-200',
     ocupada: 'bg-red-100 text-red-800 border-red-200',
@@ -119,17 +119,29 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, userR
         )}
 
         {/* Actions */}
-        {/* Botón de servicios para admin Y empleado */}
-        {(isAdmin || userRole === 'empleado') && room.status === 'ocupada' && onAddServices && (
+        {/* Botón de servicios y extensión para admin Y empleado */}
+        {(isAdmin || userRole === 'empleado') && room.status === 'ocupada' && (
           <div className="flex gap-2 pt-3 border-t">
-            <button
-              onClick={() => onAddServices(room)}
-              className="flex-1 flex items-center justify-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg transition-colors"
-              title="Agregar servicios extras"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">Servicios</span>
-            </button>
+            {onAddServices && (
+              <button
+                onClick={() => onAddServices(room)}
+                className="flex-1 flex items-center justify-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg transition-colors"
+                title="Agregar servicios extras"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="text-sm font-medium">Servicios</span>
+              </button>
+            )}
+            {onExtendStay && (
+              <button
+                onClick={() => onExtendStay(room)}
+                className="flex-1 flex items-center justify-center gap-2 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-lg transition-colors"
+                title="Extender estadía"
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="text-sm font-medium">Extender</span>
+              </button>
+            )}
           </div>
         )}
         

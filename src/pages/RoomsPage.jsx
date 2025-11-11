@@ -4,6 +4,7 @@ import { roomsAPI, reservationsAPI } from '../services/api';
 import RoomCard from '../components/RoomCard';
 import RoomModal from '../components/RoomModal';
 import AddServicesModal from '../components/AddServicesModal';
+import ExtendStayModal from '../components/ExtendStayModal';
 import Button from '../components/Button';
 import RoleGuard, { useRole } from '../components/RoleGuard';
 import { Plus, Filter, Lock } from 'lucide-react';
@@ -17,16 +18,12 @@ const RoomsPage = () => {
   const { isAdmin, hasRole } = useRole();
   const toast = useToast();
   
-  // Debug: mostrar el rol del usuario
-  console.log('👤 Usuario actual:', user);
-  console.log('🔑 Rol:', user?.role);
-  console.log('✅ isAdmin():', isAdmin());
-  
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showServicesModal, setShowServicesModal] = useState(false);
+  const [showExtendModal, setShowExtendModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [filters, setFilters] = useState({
@@ -207,6 +204,60 @@ const RoomsPage = () => {
       const message = error.response?.data?.message || 'Error al actualizar los servicios';
       toast.error(message);
     }
+  };
+
+  const handleExtendStayFromRoom = async (room) => {
+    try {
+      // Buscar la reserva activa de esta habitación
+      const response = await reservationsAPI.getAll();
+      const reservationsData = Array.isArray(response) ? response : (response.data || []);
+      
+      const activeReservation = reservationsData.find(r => {
+        // Convertir ambos a string para comparar
+        const reservationRoomId = String(r.room?._id || r.room);
+        const currentRoomId = String(room._id);
+        const roomMatch = reservationRoomId === currentRoomId;
+        const statusMatch = r.status === 'en_curso' || r.status === 'confirmada';
+        
+        return roomMatch && statusMatch;
+      });
+
+      if (!activeReservation) {
+        toast.error('No se encontró una reserva activa para esta habitación');
+        return;
+      }
+
+      setSelectedReservation(activeReservation);
+      setShowExtendModal(true);
+    } catch (error) {
+      console.error('Error al buscar reserva:', error);
+      toast.error('Error al buscar la reserva activa');
+    }
+  };
+
+  const handleExtendStay = async (extensionData) => {
+    try {
+      await reservationsAPI.extendStay(extensionData.reservationId, extensionData);
+      
+      toast.success('Estadía extendida exitosamente');
+      setShowExtendModal(false);
+      setSelectedReservation(null);
+      await fetchRooms();
+    } catch (error) {
+      console.error('Error extending stay:', error);
+      toast.error(error.response?.data?.message || 'Error al extender la estadía');
+    }
+  };
+
+  const canExtend = (reservation) => {
+    if (!reservation) return false;
+    if (!['confirmada', 'en_curso'].includes(reservation.status)) {
+      return false;
+    }
+    const checkOut = new Date(reservation.checkOut);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return checkOut >= today;
   };
 
   if (loading) {
@@ -390,6 +441,8 @@ const RoomsPage = () => {
               onDelete={handleDelete}
               onStatusChange={handleStatusChange}
               onAddServices={handleAddServicesFromRoom}
+              onExtendStay={handleExtendStayFromRoom}
+              canExtend={canExtend}
               userRole={user.role}
             />
           ))}
@@ -416,6 +469,17 @@ const RoomsPage = () => {
         }}
         reservation={selectedReservation}
         onSave={handleSaveServices}
+      />
+
+      {/* Modal de Extensión */}
+      <ExtendStayModal
+        isOpen={showExtendModal}
+        onClose={() => {
+          setShowExtendModal(false);
+          setSelectedReservation(null);
+        }}
+        reservation={selectedReservation}
+        onSave={handleExtendStay}
       />
     </div>
   );
