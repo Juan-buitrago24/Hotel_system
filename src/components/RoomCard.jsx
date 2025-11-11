@@ -1,7 +1,8 @@
 import React from 'react';
-import { Bed, Users, DollarSign, Edit, Trash2, MapPin } from 'lucide-react';
+import { Bed, Users, DollarSign, Edit, Trash2, MapPin, Plus } from 'lucide-react';
+import { getAmenityIcon, getAmenityLabel } from '../utils/amenitiesHelper';
 
-const RoomCard = ({ room, onEdit, onDelete, onStatusChange, userRole }) => {
+const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, userRole }) => {
   const statusColors = {
     disponible: 'bg-green-100 text-green-800 border-green-200',
     ocupada: 'bg-red-100 text-red-800 border-red-200',
@@ -89,14 +90,18 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, userRole }) => {
           <div className="pt-2 border-t">
             <p className="text-xs text-gray-600 mb-2">Servicios:</p>
             <div className="flex flex-wrap gap-1">
-              {room.amenities.slice(0, 3).map((amenity, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded"
-                >
-                  {amenity}
-                </span>
-              ))}
+              {room.amenities.slice(0, 3).map((amenity, index) => {
+                const icon = getAmenityIcon(amenity);
+                const label = getAmenityLabel(amenity);
+                return (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded"
+                  >
+                    {icon} {label}
+                  </span>
+                );
+              })}
               {room.amenities.length > 3 && (
                 <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
                   +{room.amenities.length - 3}
@@ -114,6 +119,21 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, userRole }) => {
         )}
 
         {/* Actions */}
+        {/* Botón de servicios para admin Y empleado */}
+        {(isAdmin || userRole === 'empleado') && room.status === 'ocupada' && onAddServices && (
+          <div className="flex gap-2 pt-3 border-t">
+            <button
+              onClick={() => onAddServices(room)}
+              className="flex-1 flex items-center justify-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg transition-colors"
+              title="Agregar servicios extras"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="text-sm font-medium">Servicios</span>
+            </button>
+          </div>
+        )}
+        
+        {/* Botones de admin (editar/eliminar) */}
         {isAdmin && (
           <div className="flex gap-2 pt-3 border-t">
             <button

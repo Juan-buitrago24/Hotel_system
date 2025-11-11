@@ -1,28 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { roomsAPI } from '../services/api';
+import { roomsAPI, reservationsAPI } from '../services/api';
 import RoomCard from '../components/RoomCard';
 import RoomModal from '../components/RoomModal';
+import AddServicesModal from '../components/AddServicesModal';
 import Button from '../components/Button';
 import RoleGuard, { useRole } from '../components/RoleGuard';
 import { Plus, Filter, Lock } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { SkeletonGrid } from '../components/SkeletonLoader';
+import { ROOM_AMENITIES } from '../constants/amenities';
+import { getAmenityIcon, getAmenityLabel } from '../utils/amenitiesHelper';
 
 const RoomsPage = () => {
   const { user } = useAuth();
   const { isAdmin, hasRole } = useRole();
   const toast = useToast();
+  
+  // Debug: mostrar el rol del usuario
+  console.log('👤 Usuario actual:', user);
+  console.log('🔑 Rol:', user?.role);
+  console.log('✅ isAdmin():', isAdmin());
+  
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showServicesModal, setShowServicesModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
+  const [selectedReservation, setSelectedReservation] = useState(null);
   const [filters, setFilters] = useState({
     status: '',
     type: '',
-    floor: ''
+    floor: '',
+    amenities: []
   });
+  const [showAmenityFilters, setShowAmenityFilters] = useState(false);
 
   useEffect(() => {
     fetchRooms();
@@ -56,6 +69,24 @@ const RoomsPage = () => {
     }
     if (filters.floor) {
       filtered = filtered.filter(room => room.floor === parseInt(filters.floor));
+    }
+    if (filters.amenities && filters.amenities.length > 0) {
+      filtered = filtered.filter(room => {
+        if (!room.amenities || room.amenities.length === 0) return false;
+        
+        // Room must have ALL selected amenities
+        return filters.amenities.every(selectedAmenityId => {
+          const amenityObj = ROOM_AMENITIES.find(a => a.id === selectedAmenityId);
+          if (!amenityObj) return false;
+          
+          // Check both by ID and label for compatibility
+          return room.amenities.some(roomAmenity => 
+            roomAmenity === selectedAmenityId || 
+            roomAmenity.toLowerCase() === amenityObj.label.toLowerCase() ||
+            roomAmenity.toLowerCase().includes(amenityObj.label.toLowerCase().split(' ')[0])
+          );
+        });
+      });
     }
 
     setFilteredRooms(filtered);
@@ -114,12 +145,68 @@ const RoomsPage = () => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  const toggleAmenityFilter = (amenityId) => {
+    setFilters(prev => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenityId)
+        ? prev.amenities.filter(a => a !== amenityId)
+        : [...prev.amenities, amenityId]
+    }));
+  };
+
   const clearFilters = () => {
-    setFilters({ status: '', type: '', floor: '' });
+    setFilters({ status: '', type: '', floor: '', amenities: [] });
+    setShowAmenityFilters(false);
   };
 
   const getStatusCount = (status) => {
     return rooms.filter(room => room.status === status).length;
+  };
+
+  const handleAddServicesFromRoom = async (room) => {
+    try {
+      // Buscar la reserva activa de esta habitación
+      const response = await reservationsAPI.getAll();
+      const reservationsData = Array.isArray(response) ? response : (response.data || []);
+      
+      const activeReservation = reservationsData.find(r => 
+        (r.room?._id === room._id || r.room === room._id) &&
+        (r.status === 'en_curso' || r.status === 'confirmada')
+      );
+
+      if (!activeReservation) {
+        toast.error('No se encontró una reserva activa para esta habitación');
+        return;
+      }
+
+      // Cargar datos completos de la reserva si es necesario
+      setSelectedReservation(activeReservation);
+      setShowServicesModal(true);
+    } catch (error) {
+      console.error('Error al buscar reserva:', error);
+      toast.error('Error al buscar la reserva activa');
+    }
+  };
+
+  const handleSaveServices = async (data) => {
+    try {
+      await reservationsAPI.update(data.reservationId, {
+        extraServices: data.extraServices,
+        totalPrice: data.newTotal,
+        notes: data.additionalNotes 
+          ? `${selectedReservation.notes || ''}\n[Servicios agregados]: ${data.additionalNotes}`.trim()
+          : selectedReservation.notes
+      });
+
+      setShowServicesModal(false);
+      setSelectedReservation(null);
+      
+      toast.success(`Servicios actualizados. Nuevo total: $${data.newTotal.toLocaleString()}`);
+    } catch (error) {
+      console.error('Error al actualizar servicios:', error);
+      const message = error.response?.data?.message || 'Error al actualizar los servicios';
+      toast.error(message);
+    }
   };
 
   if (loading) {
@@ -156,7 +243,8 @@ const RoomsPage = () => {
           <p className="text-gray-600 mt-1">Total: {rooms.length} habitaciones</p>
         </div>
         
-        <RoleGuard allowedRoles={['admin']}>
+        {/* Botón para admin y hotel_admin */}
+        {(user?.role === 'admin' || user?.role === 'hotel_admin' || user?.role === 'admin_global') && (
           <Button 
             onClick={() => {
               setEditingRoom(null);
@@ -167,10 +255,10 @@ const RoomsPage = () => {
             <Plus className="w-5 h-5 mr-2" />
             Nueva Habitación
           </Button>
-        </RoleGuard>
+        )}
 
         {/* Mensaje para empleados */}
-        {!isAdmin() && (
+        {user?.role === 'empleado' && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700 flex items-start gap-2">
             <Lock className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <span>Solo administradores pueden crear nuevas habitaciones</span>
@@ -247,6 +335,44 @@ const RoomsPage = () => {
             Limpiar filtros
           </button>
         </div>
+
+        {/* Amenities filter toggle */}
+        <button
+          onClick={() => setShowAmenityFilters(!showAmenityFilters)}
+          className="w-full mt-3 px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
+        >
+          <span className="font-medium">
+            🔍 Filtrar por Amenidades {filters.amenities.length > 0 && `(${filters.amenities.length})`}
+          </span>
+          <span>{showAmenityFilters ? '▲' : '▼'}</span>
+        </button>
+
+        {/* Amenities filters */}
+        {showAmenityFilters && (
+          <div className="mt-3 border border-gray-200 rounded-lg p-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+              {ROOM_AMENITIES.map(amenity => (
+                <button
+                  key={amenity.id}
+                  onClick={() => toggleAmenityFilter(amenity.id)}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
+                    filters.amenities.includes(amenity.id)
+                      ? 'bg-blue-500 text-white border-2 border-blue-600'
+                      : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  <span className="mr-1">{amenity.icon}</span>
+                  <span className="text-xs">{amenity.label}</span>
+                </button>
+              ))}
+            </div>
+            {filters.amenities.length > 0 && (
+              <p className="text-sm text-blue-600 mt-2">
+                {filters.amenities.length} amenidad{filters.amenities.length !== 1 ? 'es' : ''} seleccionada{filters.amenities.length !== 1 ? 's' : ''}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Rooms Grid */}
@@ -263,6 +389,7 @@ const RoomsPage = () => {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onStatusChange={handleStatusChange}
+              onAddServices={handleAddServicesFromRoom}
               userRole={user.role}
             />
           ))}
@@ -278,6 +405,17 @@ const RoomsPage = () => {
         }}
         onSubmit={handleCreateOrUpdate}
         room={editingRoom}
+      />
+
+      {/* Modal de Servicios */}
+      <AddServicesModal
+        isOpen={showServicesModal}
+        onClose={() => {
+          setShowServicesModal(false);
+          setSelectedReservation(null);
+        }}
+        reservation={selectedReservation}
+        onSave={handleSaveServices}
       />
     </div>
   );
