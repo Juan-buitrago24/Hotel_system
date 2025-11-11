@@ -17,12 +17,19 @@ import RoomsPage from './pages/RoomsPage'
 import HotelsManagementPage from './pages/HotelsManagementPage'
 import EmployeesPage from './pages/EmployeesPage'
 import GuestsPage from './pages/GuestsPage'
+import AmenitiesManagementPage from './pages/AmenitiesManagementPage'
+import ClientHotelsPage from './pages/ClientHotelsPage'
+import ClientRoomsPage from './pages/ClientRoomsPage'
+import ClientReservationForm from './pages/ClientReservationForm'
+import MyReservationsPage from './pages/MyReservationsPage'
 import { hotelAPI } from './services/api'
 
 const HotelManagementApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentHotel, setCurrentHotel] = useState(null);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [authView, setAuthView] = useState('login'); // 'login', 'register', 'forgot-password', 'reset-password', 'verify-account'
   const [resetToken, setResetToken] = useState('');
   const [verifyToken, setVerifyToken] = useState('');
@@ -73,8 +80,14 @@ const HotelManagementApp = () => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setAuthView('login');
-    // Si es admin_global, ir a gestión de hoteles, sino a dashboard
-    setCurrentView(user.role === 'admin_global' ? 'hotels' : 'dashboard');
+    // Establecer vista según el rol del usuario
+    if (user.role === 'admin_global') {
+      setCurrentView('hotels');
+    } else if (user.role === 'cliente') {
+      setCurrentView('search-hotels');
+    } else {
+      setCurrentView('dashboard');
+    }
     window.history.pushState({}, '', '/');
   };
 
@@ -160,12 +173,24 @@ const HotelManagementApp = () => {
             onShowProfile={() => setShowProfile(true)}
           />
           
+          {console.log('App render:', { role: currentUser?.role, currentView })}
+          
           {/* Vista para CLIENTES */}
           {currentUser.role === 'cliente' ? (
             <>
               <div className="bg-white shadow-sm border-b">
                 <div className="max-w-7xl mx-auto px-4 lg:px-6">
                   <div className="flex gap-4 py-4">
+                    <button
+                      onClick={() => setCurrentView('search-hotels')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        currentView === 'search-hotels'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Buscar Hoteles
+                    </button>
                     <button
                       onClick={() => setCurrentView('my-reservations')}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
@@ -176,31 +201,50 @@ const HotelManagementApp = () => {
                     >
                       Mis Reservas
                     </button>
-                    <button
-                      onClick={() => setCurrentView('new-reservation')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        currentView === 'new-reservation'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      Nueva Reserva
-                    </button>
                   </div>
                 </div>
               </div>
               <main className="max-w-7xl mx-auto p-4 lg:p-6">
-                {currentView === 'my-reservations' && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h2 className="text-2xl font-bold mb-4">Mis Reservas</h2>
-                    <p className="text-gray-600">Aquí verás tus reservas próximamente...</p>
+                {currentView === 'search-hotels' && (
+                  <ClientHotelsPage 
+                    onSelectHotel={(hotel) => {
+                      console.log('Hotel selected:', hotel);
+                      setSelectedHotel(hotel);
+                      setCurrentView('select-room');
+                      console.log('View changed to select-room');
+                    }}
+                  />
+                )}
+                {currentView === 'select-room' && selectedHotel && (
+                  <ClientRoomsPage
+                    hotel={selectedHotel}
+                    onBack={() => setCurrentView('search-hotels')}
+                    onSelectRoom={(room) => {
+                      setSelectedRoom(room);
+                      setCurrentView('new-reservation');
+                    }}
+                  />
+                )}
+                {currentView === 'select-room' && !selectedHotel && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    Error: No se seleccionó un hotel
                   </div>
                 )}
-                {currentView === 'new-reservation' && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h2 className="text-2xl font-bold mb-4">Nueva Reserva</h2>
-                    <p className="text-gray-600">Formulario de reserva próximamente...</p>
-                  </div>
+                {currentView === 'new-reservation' && selectedRoom && selectedHotel && (
+                  <ClientReservationForm
+                    hotel={selectedHotel}
+                    room={selectedRoom}
+                    currentUser={currentUser}
+                    onBack={() => setCurrentView('select-room')}
+                    onSuccess={() => {
+                      setCurrentView('my-reservations');
+                      setSelectedHotel(null);
+                      setSelectedRoom(null);
+                    }}
+                  />
+                )}
+                {currentView === 'my-reservations' && (
+                  <MyReservationsPage currentUser={currentUser} />
                 )}
               </main>
             </>
@@ -216,6 +260,7 @@ const HotelManagementApp = () => {
                 {currentView === 'hotels' && <HotelsManagementPage />}
                 {currentView === 'guests' && <GuestsPage user={currentUser} />}
                 {currentView === 'employees' && <EmployeesPage user={currentUser} />}
+                {currentView === 'amenities' && <AmenitiesManagementPage />}
               </main>
             </>
           )}

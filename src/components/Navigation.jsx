@@ -1,5 +1,5 @@
 import React from 'react'
-import { Calendar, Users, LayoutDashboard, Bed, Building2, UserCog } from 'lucide-react'
+import { Calendar, Users, LayoutDashboard, Bed, Building2, UserCog, Settings } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const Navigation = ({ activeView, onViewChange }) => {
@@ -11,7 +11,8 @@ const Navigation = ({ activeView, onViewChange }) => {
     { id: 'reservations', label: 'Reservas', icon: Calendar, enabled: true, roles: ['hotel_admin', 'empleado'] },
     { id: 'rooms', label: 'Habitaciones', icon: Bed, enabled: true, roles: ['hotel_admin', 'empleado'] },
     { id: 'guests', label: 'Huéspedes', icon: Users, enabled: true, roles: ['hotel_admin', 'empleado'] },
-    { id: 'employees', label: 'Empleados', icon: UserCog, enabled: true, roles: ['hotel_admin'] }
+    { id: 'employees', label: 'Empleados', icon: UserCog, enabled: true, roles: ['hotel_admin'] },
+    { id: 'amenities', label: 'Amenidades', icon: Settings, enabled: true, roles: ['hotel_admin', 'admin_global'] }
   ];
 
   // Filtrar items según el rol del usuario
