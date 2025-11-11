@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Settings, Image } from 'lucide-react';
 import Button from './Button';
 import InputField from './InputField';
+import ImageUploader from './ImageUploader';
 import { ROOM_AMENITIES } from '../constants/amenities';
 
 const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
+  const [activeTab, setActiveTab] = useState('details');
   const [formData, setFormData] = useState({
     number: '',
     type: 'simple',
@@ -28,6 +30,8 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
         amenities: room.amenities || [],
         description: room.description || ''
       });
+      // Cambiar a pestaña de imágenes si ya existe la habitación
+      setActiveTab(room._id ? 'details' : 'details');
     } else {
       setFormData({
         number: '',
@@ -39,6 +43,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
         amenities: [],
         description: ''
       });
+      setActiveTab('details');
     }
   }, [room, isOpen]);
 
@@ -73,20 +78,53 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-center">
-          <h2 className="text-2xl font-bold">
-            {room ? 'Editar Habitación' : 'Nueva Habitación'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">
+              {room ? `Habitación ${room.number}` : 'Nueva Habitación'}
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Pestañas - Solo mostrar si la habitación ya existe */}
+          {room && room._id && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('details')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  activeTab === 'details'
+                    ? 'bg-white text-blue-600 font-semibold'
+                    : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                Detalles
+              </button>
+              <button
+                onClick={() => setActiveTab('images')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  activeTab === 'images'
+                    ? 'bg-white text-blue-600 font-semibold'
+                    : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
+                }`}
+              >
+                <Image className="w-4 h-4" />
+                Imágenes {room.images?.length > 0 && `(${room.images.length})`}
+              </button>
+            </div>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* Pestaña de Detalles */}
+          {activeTab === 'details' && (
+            <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Número */}
             <InputField
@@ -234,9 +272,27 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
             </Button>
           </div>
         </form>
+          )}
+
+          {/* Pestaña de Imágenes */}
+          {activeTab === 'images' && room && room._id && (
+            <ImageUploader
+              roomId={room._id}
+              images={room.images || []}
+              onImagesUpdated={() => {
+                // Recargar la habitación para obtener las imágenes actualizadas
+                if (onSubmit) {
+                  // Esto forzará un refresh en el componente padre
+                  onClose();
+                }
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default RoomModal;
+

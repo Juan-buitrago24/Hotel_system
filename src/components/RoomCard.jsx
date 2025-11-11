@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bed, Users, DollarSign, Edit, Trash2, MapPin, Plus, Calendar } from 'lucide-react';
 import { getAmenityIcon, getAmenityLabel } from '../utils/amenitiesHelper';
+import ImageGallery from './ImageGallery';
 
 const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExtendStay, canExtend, userRole }) => {
   const statusColors = {
@@ -29,6 +30,9 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+      {/* Galería de Imágenes */}
+      <ImageGallery images={room.images || []} roomNumber={room.number} />
+
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white">
         <div className="flex justify-between items-start">
