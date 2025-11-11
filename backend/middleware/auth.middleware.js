@@ -50,3 +50,16 @@ export const authorize = (...roles) => {
     next();
   };
 };
+
+// Middleware específico para solo administradores
+export const adminOnly = (req, res, next) => {
+  const adminRoles = ['hotel_admin', 'admin', 'admin_global'];
+  
+  if (!adminRoles.includes(req.user.role)) {
+    return res.status(403).json({ 
+      message: `Acceso denegado. Se requiere rol de administrador.` 
+    });
+  }
+  
+  next();
+};

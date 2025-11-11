@@ -11,6 +11,7 @@ import userRoutes from './routes/user.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import hotelRoutes from './routes/hotel.routes.js';
 import guestRoutes from './routes/guest.routes.js';
+import imageRoutes from './routes/image.routes.js';
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/hotels', hotelRoutes);
 app.use('/api/guests', guestRoutes);
+app.use('/api/images', imageRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
