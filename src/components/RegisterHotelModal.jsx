@@ -141,7 +141,7 @@ const RegisterHotelModal = ({ isOpen, onClose, onSuccess }) => {
                 onChange={(e) => handleChange('plan', e.target.value)}
                 as="select"
               >
-                <option value="free">Gratuito (10 habitaciones, 3 usuarios)</option>
+                <option value="free">Gratuito (10 habitaciones, solo admin)</option>
                 <option value="basic">Básico (10 habitaciones, 5 usuarios + Cloudinary) - $29/mes</option>
                 <option value="premium">Premium (100 habitaciones, 20 usuarios + Roles) - $79/mes</option>
                 <option value="enterprise">Enterprise (Ilimitado + API + Multi-hotel) - $199/mes</option>

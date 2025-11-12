@@ -36,7 +36,7 @@ export const getStatusColor = (status) => {
 export const PLAN_FEATURES = {
   free: {
     maxRooms: 10,
-    maxUsers: 3,
+    maxUsers: 1, // Solo el admin del hotel
     cloudinary: false,
     advancedCalendar: false,
     userRoles: false,

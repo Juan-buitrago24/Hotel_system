@@ -4,7 +4,7 @@ import Room from '../models/Room.model.js';
 
 // Límites por plan actualizados según pricing
 const PLAN_LIMITS = {
-  free: { maxRooms: 10, maxUsers: 3 },
+  free: { maxRooms: 10, maxUsers: 1 }, // Solo el admin
   basic: { maxRooms: 10, maxUsers: 5 },
   professional: { maxRooms: 100, maxUsers: 20 },
   premium: { maxRooms: 100, maxUsers: 20 }, // Alias para professional
