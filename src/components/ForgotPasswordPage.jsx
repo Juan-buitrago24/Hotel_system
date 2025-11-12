@@ -55,37 +55,7 @@ const ForgotPasswordPage = ({ onBackToLogin }) => {
               recibirás instrucciones para resetear tu contraseña.
             </p>
 
-            {resetToken && (
-              <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-300 rounded-lg text-left">
-                <p className="text-sm font-bold text-blue-800 mb-2 flex items-center gap-2">
-                  🔧 MODO DESARROLLO
-                </p>
-                <p className="text-xs text-blue-700 mb-3">
-                  Como estás en desarrollo, aquí está el enlace directo:
-                </p>
-                <button
-                  onClick={() => window.location.href = `/reset-password/${resetToken}`}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors mb-2"
-                >
-                  🔑 Ir a Restablecer Contraseña
-                </button>
-                <details className="mt-3">
-                  <summary className="text-xs text-blue-700 cursor-pointer hover:text-blue-900">
-                    Ver detalles técnicos
-                  </summary>
-                  <div className="mt-2 p-2 bg-white rounded">
-                    <p className="text-xs text-gray-600 mb-1">Token:</p>
-                    <code className="block p-2 bg-gray-100 rounded text-xs break-all font-mono">
-                      {resetToken}
-                    </code>
-                    <p className="text-xs text-gray-600 mt-2 mb-1">URL completa:</p>
-                    <code className="block p-2 bg-gray-100 rounded text-xs break-all font-mono">
-                      {window.location.origin}/reset-password/{resetToken}
-                    </code>
-                  </div>
-                </details>
-              </div>
-            )}
+            {/* Banner de desarrollo eliminado - producción */}
 
             <Button onClick={onBackToLogin} fullWidth>
               <ArrowLeft className="w-4 h-4 mr-2" />

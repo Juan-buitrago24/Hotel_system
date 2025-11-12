@@ -51,15 +51,25 @@ const HotelManagementApp = () => {
 
     // Verificar si hay un token de reset o verify en la URL
     const path = window.location.pathname;
-    const resetMatch = path.match(/\/reset-password\/(.+)/);
-    const verifyMatch = path.match(/\/verify\/(.+)/);
+    const hash = window.location.hash;
+    
+    // Manejar tanto pathname como hash routing
+    const resetMatch = path.match(/\/reset-password\/(.+)/) || hash.match(/#\/reset-password\/(.+)/);
+    const verifyMatch = path.match(/\/verify\/(.+)/) || hash.match(/#\/verify\/(.+)/);
     
     if (resetMatch) {
-      setResetToken(resetMatch[1]);
+      const token = resetMatch[1];
+      console.log('🔑 Token de reset detectado:', token);
+      setResetToken(token);
       setAuthView('reset-password');
+      // Actualizar la URL sin recargar para mantener el estado
+      window.history.pushState({}, '', `/reset-password/${token}`);
     } else if (verifyMatch) {
-      setVerifyToken(verifyMatch[1]);
+      const token = verifyMatch[1];
+      console.log('✉️ Token de verificación detectado:', token);
+      setVerifyToken(token);
       setAuthView('verify-account');
+      window.history.pushState({}, '', `/verify/${token}`);
     }
   }, []);
 
