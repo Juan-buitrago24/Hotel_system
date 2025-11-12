@@ -27,6 +27,7 @@ import {
   X
 } from 'lucide-react';
 import Button from '../components/Button';
+import DarkModeToggle from '../components/DarkModeToggle';
 
 const LandingPage = ({ onNavigate }) => {
   const [scrolled, setScrolled] = useState(false);
@@ -345,7 +346,7 @@ const LandingPage = ({ onNavigate }) => {
 
       {/* Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white shadow-lg' : 'bg-transparent'
+        scrolled ? 'bg-white dark:bg-gray-800 shadow-lg' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
@@ -359,12 +360,12 @@ const LandingPage = ({ onNavigate }) => {
               </div>
               <div>
                 <h1 className={`text-2xl font-bold transition-colors ${
-                  scrolled ? 'text-gray-900' : 'text-white'
+                  scrolled ? 'text-gray-900 dark:text-white' : 'text-white'
                 }`}>
                   Hotel Manager
                 </h1>
                 <p className={`text-xs transition-colors ${
-                  scrolled ? 'text-gray-500' : 'text-white/80'
+                  scrolled ? 'text-gray-500 dark:text-gray-400' : 'text-white/80'
                 }`}>
                   Gestión Hotelera
                 </p>
@@ -374,7 +375,7 @@ const LandingPage = ({ onNavigate }) => {
               <button 
                 onClick={() => scrollToSection('home')}
                 className={`font-medium transition-colors ${
-                  scrolled ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-blue-200'
+                  scrolled ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400' : 'text-white hover:text-blue-200'
                 }`}
               >
                 Inicio
@@ -382,7 +383,7 @@ const LandingPage = ({ onNavigate }) => {
               <button 
                 onClick={() => scrollToSection('rooms')}
                 className={`font-medium transition-colors ${
-                  scrolled ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-blue-200'
+                  scrolled ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400' : 'text-white hover:text-blue-200'
                 }`}
               >
                 Habitaciones
@@ -390,7 +391,7 @@ const LandingPage = ({ onNavigate }) => {
               <button 
                 onClick={() => scrollToSection('hotels')}
                 className={`font-medium transition-colors ${
-                  scrolled ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-blue-200'
+                  scrolled ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400' : 'text-white hover:text-blue-200'
                 }`}
               >
                 Para Hoteles
@@ -398,11 +399,12 @@ const LandingPage = ({ onNavigate }) => {
               <button 
                 onClick={() => scrollToSection('contact')}
                 className={`font-medium transition-colors ${
-                  scrolled ? 'text-gray-700 hover:text-blue-600' : 'text-white hover:text-blue-200'
+                  scrolled ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400' : 'text-white hover:text-blue-200'
                 }`}
               >
                 Contacto
               </button>
+              <DarkModeToggle />
               <Button 
                 variant={scrolled ? 'primary' : 'secondary'}
                 size="sm"
@@ -483,13 +485,13 @@ const LandingPage = ({ onNavigate }) => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               ¿Por Qué Elegirnos?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Conectamos hoteles con viajeros, ofreciendo la mejor experiencia para ambos
             </p>
           </div>
@@ -498,17 +500,17 @@ const LandingPage = ({ onNavigate }) => {
             {features.map((feature, index) => (
               <div 
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow group"
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow group"
               >
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl 
                               flex items-center justify-center text-white mb-4 group-hover:scale-110 
                               transition-transform">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   {feature.description}
                 </p>
               </div>
@@ -518,13 +520,13 @@ const LandingPage = ({ onNavigate }) => {
       </section>
 
       {/* Rooms Section */}
-      <section id="rooms" className="py-20 bg-white">
+      <section id="rooms" className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Tipos de Habitaciones Disponibles
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Encuentra la habitación perfecta en cualquiera de nuestros hoteles asociados. 
               Desde opciones individuales hasta suites de lujo para toda la familia.
             </p>
@@ -545,22 +547,22 @@ const LandingPage = ({ onNavigate }) => {
                   />
                   <div className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg">
                     <span className="text-2xl font-bold text-blue-600">${room.price}</span>
-                    <span className="text-gray-600">/noche</span>
+                    <span className="text-gray-600 dark:text-gray-400">/noche</span>
                   </div>
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                     Habitación {room.type}
                   </h3>
-                  <p className="text-gray-600 mb-4 flex-grow">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4 flex-grow">
                     {room.description}
                   </p>
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center text-gray-700">
+                    <div className="flex items-center text-gray-700 dark:text-gray-300">
                       <Users className="w-5 h-5 mr-2" />
                       {room.capacity} {room.capacity === 1 ? 'persona' : 'personas'}
                     </div>
-                    <div className="flex items-center text-gray-700">
+                    <div className="flex items-center text-gray-700 dark:text-gray-300">
                       <Bed className="w-5 h-5 mr-2" />
                       1 cama
                     </div>
@@ -569,7 +571,7 @@ const LandingPage = ({ onNavigate }) => {
                     {room.amenities.map((amenity, idx) => (
                       <span 
                         key={idx}
-                        className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
+                        className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm"
                       >
                         {amenity}
                       </span>
@@ -589,7 +591,7 @@ const LandingPage = ({ onNavigate }) => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-purple-600 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div style={{
             backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
@@ -602,12 +604,12 @@ const LandingPage = ({ onNavigate }) => {
             <h2 className="text-4xl font-bold text-white mb-4">
               Lo Que Dicen Nuestros Huéspedes
             </h2>
-            <p className="text-xl text-blue-100">
+            <p className="text-xl text-blue-100 dark:text-blue-200">
               Miles de clientes satisfechos nos respaldan
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 md:p-12">
             <div className="flex flex-col items-center text-center">
               <img 
                 src={testimonials[currentTestimonial].avatar}
@@ -619,10 +621,10 @@ const LandingPage = ({ onNavigate }) => {
                   <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
-              <p className="text-xl text-gray-700 mb-6 italic">
+              <p className="text-xl text-gray-700 dark:text-gray-300 mb-6 italic">
                 "{testimonials[currentTestimonial].comment}"
               </p>
-              <h4 className="text-lg font-semibold text-gray-900">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {testimonials[currentTestimonial].name}
               </h4>
             </div>
@@ -635,8 +637,8 @@ const LandingPage = ({ onNavigate }) => {
                   onClick={() => setCurrentTestimonial(index)}
                   className={`w-3 h-3 rounded-full transition-all ${
                     index === currentTestimonial 
-                      ? 'bg-blue-600 w-8' 
-                      : 'bg-gray-300 hover:bg-gray-400'
+                      ? 'bg-blue-600 dark:bg-blue-400 w-8' 
+                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                   }`}
                 />
               ))}
@@ -646,18 +648,18 @@ const LandingPage = ({ onNavigate }) => {
       </section>
 
       {/* Section: ¿Eres un Hotel? */}
-      <section id="hotels" className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+      <section id="hotels" className="py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full mb-6 shadow-lg">
               <Building2 className="w-5 h-5" />
               <span className="font-bold text-lg">Para Hoteles</span>
             </div>
-            <h2 className="text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
               Transforma tu Hotel con Tecnología
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Únete a más de <span className="font-bold text-blue-600">100+ hoteles</span> que ya confían en nosotros. 
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Únete a más de <span className="font-bold text-blue-600 dark:text-blue-400">100+ hoteles</span> que ya confían en nosotros. 
               Automatiza tu gestión, aumenta reservas y mejora la experiencia de tus huéspedes.
             </p>
           </div>
@@ -669,8 +671,8 @@ const LandingPage = ({ onNavigate }) => {
                             flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Aumenta Reservas</h3>
-              <p className="text-gray-600 text-sm">Gestión inteligente que incrementa tu ocupación</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Aumenta Reservas</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Gestión inteligente que incrementa tu ocupación</p>
             </div>
 
             <div className="text-center p-6">
@@ -678,8 +680,8 @@ const LandingPage = ({ onNavigate }) => {
                             flex items-center justify-center mx-auto mb-4">
                 <BarChart3 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Analytics Avanzados</h3>
-              <p className="text-gray-600 text-sm">Reportes y estadísticas en tiempo real</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Analytics Avanzados</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Reportes y estadísticas en tiempo real</p>
             </div>
 
             <div className="text-center p-6">
@@ -687,8 +689,8 @@ const LandingPage = ({ onNavigate }) => {
                             flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Automatización</h3>
-              <p className="text-gray-600 text-sm">Reduce tareas manuales y errores humanos</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Automatización</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Reduce tareas manuales y errores humanos</p>
             </div>
 
             <div className="text-center p-6">
@@ -696,17 +698,17 @@ const LandingPage = ({ onNavigate }) => {
                             flex items-center justify-center mx-auto mb-4">
                 <HeadphonesIcon className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Soporte 24/7</h3>
-              <p className="text-gray-600 text-sm">Asistencia técnica cuando la necesites</p>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-2">Soporte 24/7</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Asistencia técnica cuando la necesites</p>
             </div>
           </div>
 
           {/* Pricing Plans */}
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Planes y Precios
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Elige el plan perfecto para tu hotel. Sin costos ocultos.
             </p>
           </div>
@@ -714,8 +716,8 @@ const LandingPage = ({ onNavigate }) => {
           {/* Indicador de carga */}
           {loadingPlans ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-gray-600">Cargando planes...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Cargando planes...</p>
             </div>
           ) : (
             <>
@@ -723,8 +725,8 @@ const LandingPage = ({ onNavigate }) => {
                 {plans.map((plan, index) => (
                   <div 
                     key={plan._id || index}
-                    className={`relative bg-white rounded-2xl shadow-xl overflow-hidden transform 
-                              transition-all hover:scale-105 ${plan.popular ? 'ring-4 ring-purple-500' : ''}`}
+                    className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transform 
+                              transition-all hover:scale-105 ${plan.popular ? 'ring-4 ring-purple-500 dark:ring-purple-400' : ''}`}
                   >
                     {plan.popular && (
                       <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-500 to-pink-500 
@@ -735,7 +737,7 @@ const LandingPage = ({ onNavigate }) => {
 
                     <div className={`bg-gradient-to-r ${plan.color} p-8 text-white`}>
                       <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                      <p className="text-blue-100 mb-4">{plan.description}</p>
+                      <p className="text-blue-100 dark:text-blue-200 mb-4">{plan.description}</p>
                       <div className="flex items-baseline">
                         <span className="text-5xl font-bold">${plan.price}</span>
                         <span className="text-xl ml-2">/mes</span>
@@ -747,7 +749,7 @@ const LandingPage = ({ onNavigate }) => {
                         {plan.features.map((feature, idx) => (
                           <li key={idx} className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                            <span className="text-gray-700">{feature}</span>
+                            <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                           </li>
                         ))}
                       </ul>
@@ -768,12 +770,12 @@ const LandingPage = ({ onNavigate }) => {
               </div>
 
               <div className="mt-12 text-center">
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
                   ¿Tienes más de 100 habitaciones o necesidades específicas?
                 </p>
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="text-blue-600 font-semibold hover:text-blue-700 inline-flex items-center gap-2"
+                  className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 inline-flex items-center gap-2"
                 >
                   Contacta con ventas para un plan personalizado
                   <ChevronRight className="w-4 h-4" />
@@ -785,64 +787,64 @@ const LandingPage = ({ onNavigate }) => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-gray-50">
+      <section id="contact" className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Info */}
             <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
                 Contáctanos
               </h2>
-              <p className="text-xl text-gray-600 mb-8">
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
                 ¿Tienes preguntas? Estamos aquí para ayudarte
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                    <MapPin className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Dirección</h4>
-                    <p className="text-gray-600">Av. Principal 123, Centro, Ciudad</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Dirección</h4>
+                    <p className="text-gray-600 dark:text-gray-400">Av. Principal 123, Centro, Ciudad</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                    <Phone className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <Phone className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Teléfono</h4>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Teléfono</h4>
+                    <p className="text-gray-600 dark:text-gray-400">+1 (555) 123-4567</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                    <Mail className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
+                    <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Email</h4>
-                    <p className="text-gray-600">info@hotelmanager.com</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Email</h4>
+                    <p className="text-gray-600 dark:text-gray-400">info@hotelmanager.com</p>
                   </div>
                 </div>
               </div>
 
               {/* Social Media */}
               <div className="mt-8">
-                <h4 className="font-semibold text-gray-900 mb-4">Síguenos</h4>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Síguenos</h4>
                 <div className="flex gap-4">
-                  <a href="#" className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center 
-                                       text-white hover:bg-blue-700 transition-colors">
+                  <a href="#" className="w-12 h-12 bg-blue-600 dark:bg-blue-700 rounded-lg flex items-center justify-center 
+                                       text-white hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors">
                     <Facebook className="w-6 h-6" />
                   </a>
                   <a href="#" className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-500 rounded-lg 
                                        flex items-center justify-center text-white hover:opacity-90 transition-opacity">
                     <Instagram className="w-6 h-6" />
                   </a>
-                  <a href="#" className="w-12 h-12 bg-blue-400 rounded-lg flex items-center justify-center 
-                                       text-white hover:bg-blue-500 transition-colors">
+                  <a href="#" className="w-12 h-12 bg-blue-400 dark:bg-blue-600 rounded-lg flex items-center justify-center 
+                                       text-white hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors">
                     <Twitter className="w-6 h-6" />
                   </a>
                 </div>
@@ -850,33 +852,33 @@ const LandingPage = ({ onNavigate }) => {
             </div>
 
             {/* Contact Form */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Envíanos un mensaje
               </h3>
 
               {formSubmitted && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <p className="text-green-800 font-semibold">¡Mensaje enviado exitosamente!</p>
+                    <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <p className="text-green-800 dark:text-green-300 font-semibold">¡Mensaje enviado exitosamente!</p>
                   </div>
-                  <p className="text-green-700 text-sm ml-8">
+                  <p className="text-green-700 dark:text-green-400 text-sm ml-8">
                     Te contactaremos pronto. Revisa tu email para más detalles.
                   </p>
                 </div>
               )}
 
               {formError && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                  <X className="w-5 h-5 text-red-600" />
-                  <p className="text-red-800">{formError}</p>
+                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg flex items-center gap-3">
+                  <X className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  <p className="text-red-800 dark:text-red-300">{formError}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nombre completo
                   </label>
                   <input
@@ -885,14 +887,15 @@ const LandingPage = ({ onNavigate }) => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                             focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Juan Pérez"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email
                   </label>
                   <input
@@ -901,14 +904,15 @@ const LandingPage = ({ onNavigate }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                             focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="juan@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Teléfono
                   </label>
                   <input
@@ -916,14 +920,15 @@ const LandingPage = ({ onNavigate }) => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                             focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Mensaje
                   </label>
                   <textarea
@@ -932,8 +937,9 @@ const LandingPage = ({ onNavigate }) => {
                     onChange={handleInputChange}
                     required
                     rows="4"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                             focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     placeholder="¿En qué podemos ayudarte?"
                   />
                 </div>
@@ -962,12 +968,12 @@ const LandingPage = ({ onNavigate }) => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-900 dark:bg-gray-950 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <h3 className="text-2xl font-bold mb-4">🏨 Hotel Manager</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-400 dark:text-gray-500">
                 Plataforma líder en gestión hotelera. Conectamos hoteles con viajeros de todo el mundo.
               </p>
             </div>
@@ -976,22 +982,22 @@ const LandingPage = ({ onNavigate }) => {
               <h4 className="font-semibold mb-4">Enlaces Rápidos</h4>
               <ul className="space-y-2">
                 <li>
-                  <button onClick={() => scrollToSection('home')} className="text-gray-400 hover:text-white transition-colors">
+                  <button onClick={() => scrollToSection('home')} className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-300 transition-colors">
                     Inicio
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => scrollToSection('rooms')} className="text-gray-400 hover:text-white transition-colors">
+                  <button onClick={() => scrollToSection('rooms')} className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-300 transition-colors">
                     Habitaciones
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => scrollToSection('contact')} className="text-gray-400 hover:text-white transition-colors">
+                  <button onClick={() => scrollToSection('contact')} className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-300 transition-colors">
                     Contacto
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => onNavigate('login')} className="text-gray-400 hover:text-white transition-colors">
+                  <button onClick={() => onNavigate('login')} className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-300 transition-colors">
                     Iniciar Sesión
                   </button>
                 </li>
@@ -1000,7 +1006,7 @@ const LandingPage = ({ onNavigate }) => {
 
             <div>
               <h4 className="font-semibold mb-4">Servicios</h4>
-              <ul className="space-y-2 text-gray-400">
+              <ul className="space-y-2 text-gray-400 dark:text-gray-500">
                 <li>Restaurant 24/7</li>
                 <li>Servicio a la habitación</li>
                 <li>Lavandería</li>
@@ -1010,7 +1016,7 @@ const LandingPage = ({ onNavigate }) => {
 
             <div>
               <h4 className="font-semibold mb-4">Horarios</h4>
-              <ul className="space-y-2 text-gray-400">
+              <ul className="space-y-2 text-gray-400 dark:text-gray-500">
                 <li>Check-in: 3:00 PM</li>
                 <li>Check-out: 12:00 PM</li>
                 <li>Recepción: 24/7</li>
@@ -1018,15 +1024,15 @@ const LandingPage = ({ onNavigate }) => {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+          <div className="border-t border-gray-800 dark:border-gray-900 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-400 dark:text-gray-500 text-sm">
               © 2025 Hotel Manager. Todos los derechos reservados.
             </p>
             <div className="flex gap-4 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
+              <a href="#" className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-300 transition-colors text-sm">
                 Términos y Condiciones
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
+              <a href="#" className="text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-300 transition-colors text-sm">
                 Política de Privacidad
               </a>
             </div>
