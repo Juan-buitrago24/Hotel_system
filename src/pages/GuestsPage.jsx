@@ -109,11 +109,18 @@ const GuestsPage = ({ user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Agregar hotel al formData antes de enviar
+      const guestData = {
+        ...formData,
+        hotel: user.hotel._id || user.hotel, // Asegurar que siempre tenga hotel
+        email: formData.email?.trim() || undefined // Si está vacío, enviar undefined
+      };
+      
       if (editingGuest) {
-        await guestAPI.update(editingGuest._id, formData);
+        await guestAPI.update(editingGuest._id, guestData);
         toast.success('Huésped actualizado exitosamente');
       } else {
-        await guestAPI.create(formData);
+        await guestAPI.create(guestData);
         toast.success('Huésped creado exitosamente');
       }
       handleCloseModal();

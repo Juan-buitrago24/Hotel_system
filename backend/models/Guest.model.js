@@ -29,7 +29,15 @@ const guestSchema = new mongoose.Schema({
     type: String,
     trim: true,
     lowercase: true,
-    match: [/^\S+@\S+\.\S+$/, 'Email inválido']
+    validate: {
+      validator: function(v) {
+        // Si el email está vacío, es válido (opcional)
+        if (!v) return true;
+        // Si tiene contenido, debe cumplir el formato
+        return /^\S+@\S+\.\S+$/.test(v);
+      },
+      message: 'Email inválido. Debe tener formato: ejemplo@dominio.com'
+    }
   },
   phone: {
     type: String,
