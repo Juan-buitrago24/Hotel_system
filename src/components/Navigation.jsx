@@ -21,7 +21,7 @@ const Navigation = ({ activeView, onViewChange }) => {
   );
 
   return (
-    <nav className="bg-white border-b">
+    <nav className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 transition-colors">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex space-x-1 overflow-x-auto">
           {visibleNavItems.map(item => (
@@ -31,10 +31,10 @@ const Navigation = ({ activeView, onViewChange }) => {
               disabled={!item.enabled}
               className={`flex items-center space-x-2 px-4 py-3 border-b-2 transition ${
                 item.enabled && activeView === item.id
-                  ? 'border-blue-600 text-blue-600'
+                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : item.enabled
-                  ? 'border-transparent text-gray-600 hover:text-gray-800'
-                  : 'border-transparent text-gray-400 cursor-not-allowed'
+                  ? 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white'
+                  : 'border-transparent text-gray-400 dark:text-gray-600 cursor-not-allowed'
               }`}
             >
               <item.icon className="w-5 h-5" />

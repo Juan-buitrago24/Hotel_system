@@ -77,8 +77,8 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">
@@ -138,7 +138,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
 
             {/* Tipo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Tipo de Habitación
               </label>
               <select
@@ -146,7 +146,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
                 value={formData.type}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="simple">Simple</option>
                 <option value="doble">Doble</option>
@@ -181,7 +181,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
 
             {/* Piso */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Piso
               </label>
               <select
@@ -189,7 +189,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
                 value={formData.floor}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {[1, 2, 3, 4, 5].map(floor => (
                   <option key={floor} value={floor}>Piso {floor}</option>
@@ -199,7 +199,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
 
             {/* Estado */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Estado
               </label>
               <select
@@ -207,7 +207,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
                 value={formData.status}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="disponible">Disponible</option>
                 <option value="ocupada">Ocupada</option>
@@ -219,10 +219,10 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
 
           {/* Amenidades */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Amenidades y Servicios
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700/50">
               {ROOM_AMENITIES.map(amenity => (
                 <button
                   key={amenity.id}
@@ -231,7 +231,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
                     formData.amenities.includes(amenity.id)
                       ? 'bg-blue-500 text-white border-2 border-blue-600'
-                      : 'bg-gray-50 text-gray-700 border-2 border-gray-200 hover:bg-gray-100'
+                      : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
                   <span>{amenity.icon}</span>
@@ -239,14 +239,14 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               {formData.amenities.length} amenidad{formData.amenities.length !== 1 ? 'es' : ''} seleccionada{formData.amenities.length !== 1 ? 's' : ''}
             </p>
           </div>
 
           {/* Descripción */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Descripción
             </label>
             <textarea
@@ -255,7 +255,7 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
               onChange={handleChange}
               rows="3"
               placeholder="Descripción de la habitación..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none placeholder-gray-400 dark:placeholder-gray-500"
             />
           </div>
 

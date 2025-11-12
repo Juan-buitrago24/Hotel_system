@@ -28,20 +28,20 @@ const CalendarView = ({ selectedDate, onDateChange, reservations }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => changeMonth(-1)}
-          className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-bold"
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition font-bold"
         >
           ‹
         </button>
-        <h3 className="text-xl font-bold text-gray-800">
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white">
           {MONTH_NAMES[selectedDate.getMonth()]} {selectedDate.getFullYear()}
         </h3>
         <button
           onClick={() => changeMonth(1)}
-          className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-bold"
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition font-bold"
         >
           ›
         </button>
@@ -49,7 +49,7 @@ const CalendarView = ({ selectedDate, onDateChange, reservations }) => {
 
       <div className="grid grid-cols-7 gap-2">
         {DAY_NAMES.map(day => (
-          <div key={day} className="text-center font-semibold text-gray-600 text-sm py-2">
+          <div key={day} className="text-center font-semibold text-gray-600 dark:text-gray-400 text-sm py-2">
             {day}
           </div>
         ))}

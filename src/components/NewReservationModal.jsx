@@ -122,8 +122,8 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
   const availableRooms = rooms.filter(r => r.status === 'disponible');
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-center">
           <h3 className="text-2xl font-bold">Nueva Reserva</h3>
           <button
@@ -136,10 +136,10 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Búsqueda de Huésped Existente */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-semibold text-gray-800 flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-600" />
+              <h4 className="font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 Información del Huésped
               </h4>
               {!formData.guest && (
@@ -168,40 +168,40 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
             {showGuestSearch && !formData.guest && (
               <div className="mb-4 relative">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                   <input
                     type="text"
                     placeholder="Buscar por nombre, documento, email o teléfono..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500"
                   />
                 </div>
                 
                 {searchResults.length > 0 && (
-                  <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {searchResults.map((guest) => (
                       <button
                         key={guest._id}
                         type="button"
                         onClick={() => handleSelectGuest(guest)}
-                        className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-0"
+                        className="w-full text-left px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors border-b border-gray-100 dark:border-gray-600 last:border-0"
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-semibold text-gray-900 flex items-center gap-2">
+                            <p className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                               {guest.firstName} {guest.lastName}
                               {guest.isVIP && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                               {guest.documentType} {guest.documentNumber}
                             </p>
                             {guest.email && (
-                              <p className="text-sm text-gray-500">{guest.email}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{guest.email}</p>
                             )}
                           </div>
                           {guest.phone && (
-                            <span className="text-sm text-gray-500">{guest.phone}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{guest.phone}</span>
                           )}
                         </div>
                       </button>
@@ -241,14 +241,14 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Habitación *
               </label>
               <select
                 value={formData.room}
                 onChange={(e) => setFormData({...formData, room: e.target.value})}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Seleccionar habitación</option>
                 {availableRooms.map((room) => (
@@ -258,7 +258,7 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
                 ))}
               </select>
               {availableRooms.length === 0 && (
-                <p className="text-xs text-red-600 mt-1">No hay habitaciones disponibles</p>
+                <p className="text-xs text-red-600 dark:text-red-400 mt-1">No hay habitaciones disponibles</p>
               )}
             </div>
 
@@ -289,7 +289,7 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Notas adicionales
             </label>
             <textarea
@@ -297,7 +297,7 @@ const NewReservationModal = ({ isOpen, onClose, onSubmit, rooms = [] }) => {
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
               rows="3"
               placeholder="Peticiones especiales, alergias, etc."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none placeholder-gray-400 dark:placeholder-gray-500"
             />
           </div>
 
