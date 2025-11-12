@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import AuthContext from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
+import { ThemeProvider } from './context/ThemeContext'
 import ToastContainer from './components/ToastContainer'
+import Chatbot from './components/Chatbot'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './components/LoginPage'
 import RegisterPage from './components/RegisterPage'
@@ -83,12 +85,11 @@ const HotelManagementApp = () => {
     setCurrentUser(user);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
-    setAuthView('login');
     // Establecer vista según el rol del usuario
     if (user.role === 'admin_global') {
       setCurrentView('hotels');
-    } else if (user.role === 'cliente') {
-      setCurrentView('search-hotels');
+    } else if (user.role === 'client') {
+      setCurrentView('client-hotels');
     } else {
       setCurrentView('dashboard');
     }
@@ -98,11 +99,11 @@ const HotelManagementApp = () => {
   const handleLogout = () => {
     setCurrentUser(null);
     setCurrentHotel(null);
-    setCurrentView('dashboard'); // Reset a la vista inicial
+    setCurrentView('landing');
     setShowProfile(false);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setAuthView('login');
+    setAuthView('landing');
   };
 
   const handleUpdateUser = (updatedUser) => {
@@ -125,13 +126,15 @@ const HotelManagementApp = () => {
   // Renderizar vistas de autenticación
   if (!currentUser) {
     return (
-      <ToastProvider>
-        <ToastContainer />
-        
-        {/* Landing Page */}
-        {authView === 'landing' && (
-          <LandingPage onNavigate={setAuthView} />
-        )}
+      <ThemeProvider>
+        <ToastProvider>
+          <ToastContainer />
+          <Chatbot />
+          
+          {/* Landing Page */}
+          {authView === 'landing' && (
+            <LandingPage onNavigate={setAuthView} />
+          )}
 
         {/* Register */}
         {authView === 'register' && (
@@ -175,11 +178,13 @@ const HotelManagementApp = () => {
           />
         )}
       </ToastProvider>
+      </ThemeProvider>
     );
   }
 
   return (
-    <ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
       <AuthContext.Provider value={{ user: currentUser }}>
         <ToastContainer />
 
@@ -293,8 +298,12 @@ const HotelManagementApp = () => {
           )}
           </div>
         )}
+
+        {/* Chatbot flotante */}
+        <Chatbot />
       </AuthContext.Provider>
     </ToastProvider>
+    </ThemeProvider>
   );
 };
 
