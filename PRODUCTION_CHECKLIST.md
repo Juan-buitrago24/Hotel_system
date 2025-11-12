@@ -6,10 +6,10 @@
 
 ```env
 # MongoDB Atlas Connection
-MONGO_URI=mongodb+srv://hotel_user:cwrxriJO3w6dXMIG@cluster0.px6lwr7.mongodb.net/HotelSystem?retryWrites=true&w=majority&appName=Cluster0
+MONGO_URI=mongodb+srv://<USUARIO>:<PASSWORD>@cluster0.xxxxx.mongodb.net/HotelSystem?retryWrites=true&w=majority&appName=Cluster0
 
 # JWT Secret (genera uno nuevo con: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
-JWT_SECRET=mi_clave_secreta_super_segura_2024
+JWT_SECRET=<GENERA_UNO_NUEVO_AQUI>
 
 # Node Environment
 NODE_ENV=production
@@ -19,12 +19,12 @@ NODE_ENV=production
 
 ```env
 # Cloudinary - Para galería de imágenes (Plan Básico+)
-CLOUDINARY_CLOUD_NAME=dmnrpq1ze
-CLOUDINARY_API_KEY=199873391723197
-CLOUDINARY_API_SECRET=R3eVtazcj8-TGJ1UsWeoKNtLLwM
+CLOUDINARY_CLOUD_NAME=<TU_CLOUD_NAME>
+CLOUDINARY_API_KEY=<TU_API_KEY>
+CLOUDINARY_API_SECRET=<TU_API_SECRET>
 
 # Resend - Para emails de verificación y recuperación
-RESEND_API_KEY=re_XfiPcwdh_QEVvTe2RKv6MhV7cxF6QxNwz
+RESEND_API_KEY=<TU_RESEND_API_KEY>
 EMAIL_FROM=Hotel System <onboarding@resend.dev>
 
 # Frontend URL - Cambia por tu URL de Vercel/Netlify
