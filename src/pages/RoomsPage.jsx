@@ -290,8 +290,8 @@ const RoomsPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Gestión de Habitaciones</h2>
-          <p className="text-gray-600 mt-1">Total: {rooms.length} habitaciones</p>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Gestión de Habitaciones</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Total: {rooms.length} habitaciones</p>
         </div>
         
         {/* Botón para admin y hotel_admin */}
@@ -310,7 +310,7 @@ const RoomsPage = () => {
 
         {/* Mensaje para empleados */}
         {user?.role === 'empleado' && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700 flex items-start gap-2">
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-3 text-sm text-blue-700 dark:text-blue-300 flex items-start gap-2">
             <Lock className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <span>Solo administradores pueden crear nuevas habitaciones</span>
           </div>
@@ -319,35 +319,35 @@ const RoomsPage = () => {
 
       {/* Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-green-600 text-sm font-medium">Disponibles</p>
-          <p className="text-2xl font-bold text-green-700">{getStatusCount('disponible')}</p>
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4">
+          <p className="text-green-600 dark:text-green-400 text-sm font-medium">Disponibles</p>
+          <p className="text-2xl font-bold text-green-700 dark:text-green-300">{getStatusCount('disponible')}</p>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-600 text-sm font-medium">Ocupadas</p>
-          <p className="text-2xl font-bold text-red-700">{getStatusCount('ocupada')}</p>
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
+          <p className="text-red-600 dark:text-red-400 text-sm font-medium">Ocupadas</p>
+          <p className="text-2xl font-bold text-red-700 dark:text-red-300">{getStatusCount('ocupada')}</p>
         </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-600 text-sm font-medium">Limpieza</p>
-          <p className="text-2xl font-bold text-yellow-700">{getStatusCount('limpieza')}</p>
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+          <p className="text-yellow-600 dark:text-yellow-400 text-sm font-medium">Limpieza</p>
+          <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">{getStatusCount('limpieza')}</p>
         </div>
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <p className="text-orange-600 text-sm font-medium">Mantenimiento</p>
-          <p className="text-2xl font-bold text-orange-700">{getStatusCount('mantenimiento')}</p>
+        <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-lg p-4">
+          <p className="text-orange-600 dark:text-orange-400 text-sm font-medium">Mantenimiento</p>
+          <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">{getStatusCount('mantenimiento')}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-800">Filtros</h3>
+          <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <h3 className="font-semibold text-gray-800 dark:text-white">Filtros</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Todos los estados</option>
             <option value="disponible">Disponible</option>
@@ -359,7 +359,7 @@ const RoomsPage = () => {
           <select
             value={filters.type}
             onChange={(e) => handleFilterChange('type', e.target.value)}
-            className="rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Todos los tipos</option>
             <option value="simple">Simple</option>
@@ -371,7 +371,7 @@ const RoomsPage = () => {
           <select
             value={filters.floor}
             onChange={(e) => handleFilterChange('floor', e.target.value)}
-            className="rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Todos los pisos</option>
             {[1, 2, 3, 4, 5].map(floor => (
@@ -381,7 +381,7 @@ const RoomsPage = () => {
 
           <button
             onClick={clearFilters}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors"
+            className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg transition-colors"
           >
             Limpiar filtros
           </button>
@@ -390,7 +390,7 @@ const RoomsPage = () => {
         {/* Amenities filter toggle */}
         <button
           onClick={() => setShowAmenityFilters(!showAmenityFilters)}
-          className="w-full mt-3 px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
+          className="w-full mt-3 px-4 py-2 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex items-center justify-between"
         >
           <span className="font-medium">
             🔍 Filtrar por Amenidades {filters.amenities.length > 0 && `(${filters.amenities.length})`}
@@ -400,7 +400,7 @@ const RoomsPage = () => {
 
         {/* Amenities filters */}
         {showAmenityFilters && (
-          <div className="mt-3 border border-gray-200 rounded-lg p-4">
+          <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
               {ROOM_AMENITIES.map(amenity => (
                 <button
@@ -409,7 +409,7 @@ const RoomsPage = () => {
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left ${
                     filters.amenities.includes(amenity.id)
                       ? 'bg-blue-500 text-white border-2 border-blue-600'
-                      : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100'
+                      : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
                   <span className="mr-1">{amenity.icon}</span>
@@ -418,7 +418,7 @@ const RoomsPage = () => {
               ))}
             </div>
             {filters.amenities.length > 0 && (
-              <p className="text-sm text-blue-600 mt-2">
+              <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
                 {filters.amenities.length} amenidad{filters.amenities.length !== 1 ? 'es' : ''} seleccionada{filters.amenities.length !== 1 ? 's' : ''}
               </p>
             )}
@@ -428,8 +428,8 @@ const RoomsPage = () => {
 
       {/* Rooms Grid */}
       {filteredRooms.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-md">
-          <p className="text-gray-500">No se encontraron habitaciones</p>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+          <p className="text-gray-500 dark:text-gray-400">No se encontraron habitaciones</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

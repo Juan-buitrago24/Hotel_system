@@ -21,28 +21,28 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, 
   const isVIP = reservation.guest?.isVIP;
 
   return (
-    <tr className="border-b hover:bg-gray-50">
+    <tr className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
       <td className="py-3 px-4">
         <div>
-          <div className="font-medium text-gray-900 flex items-center gap-2">
+          <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
             {guestName}
             {isVIP && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
           </div>
           {guestDocument && (
-            <div className="text-xs text-gray-500">Doc: {guestDocument}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Doc: {guestDocument}</div>
           )}
           {reservation.guestEmail && (
-            <div className="text-xs text-gray-500">{reservation.guestEmail}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{reservation.guestEmail}</div>
           )}
         </div>
       </td>
       <td className="py-3 px-4">
-        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
+        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-sm font-medium">
           {roomNumber}
         </span>
       </td>
-      <td className="py-3 px-4 text-sm">{formatDate(reservation.checkIn)}</td>
-      <td className="py-3 px-4 text-sm">{formatDate(reservation.checkOut)}</td>
+      <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-300">{formatDate(reservation.checkIn)}</td>
+      <td className="py-3 px-4 text-sm text-gray-900 dark:text-gray-300">{formatDate(reservation.checkOut)}</td>
       <td className="py-3 px-4">
         <select
           value={reservation.status}
@@ -56,11 +56,11 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, 
           <option value="cancelada">Cancelada</option>
         </select>
       </td>
-      <td className="py-3 px-4 font-semibold text-green-600">
+      <td className="py-3 px-4 font-semibold text-green-600 dark:text-green-400">
         <div>
           <div>${reservation.totalPrice?.toFixed(2)}</div>
           {reservation.extraServices && reservation.extraServices.length > 0 && (
-            <div className="text-xs text-blue-600">
+            <div className="text-xs text-blue-600 dark:text-blue-400">
               +{reservation.extraServices.length} servicio{reservation.extraServices.length !== 1 ? 's' : ''}
             </div>
           )}
@@ -70,7 +70,7 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, 
         <div className="flex gap-2">
           <button
             onClick={() => onAddServices(reservation)}
-            className="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded hover:bg-blue-50"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors p-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900/30"
             title="Agregar servicios extras"
           >
             <Plus className="w-4 h-4" />
@@ -78,7 +78,7 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, 
           {canExtend && canExtend(reservation) && (
             <button
               onClick={() => onExtendStay(reservation)}
-              className="text-purple-600 hover:text-purple-800 transition-colors p-2 rounded hover:bg-purple-50"
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition-colors p-2 rounded hover:bg-purple-50 dark:hover:bg-purple-900/30"
               title="Extender estadía"
             >
               <Calendar className="w-4 h-4" />
@@ -87,7 +87,7 @@ const ReservationRow = ({ reservation, onStatusChange, onDelete, onAddServices, 
           {canDelete && (
             <button
               onClick={() => onDelete(reservation._id)}
-              className="text-red-600 hover:text-red-800 transition-colors p-2 rounded hover:bg-red-50"
+              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors p-2 rounded hover:bg-red-50 dark:hover:bg-red-900/30"
               title="Eliminar reserva"
             >
               <Trash2 className="w-4 h-4" />

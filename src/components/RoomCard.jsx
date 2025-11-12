@@ -29,7 +29,7 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
   const isAdmin = userRole === 'hotel_admin' || userRole === 'admin' || userRole === 'admin_global';
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
       {/* Galería de Imágenes */}
       <ImageGallery images={room.images || []} roomNumber={room.number} />
 
@@ -51,7 +51,7 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
       <div className="p-4 space-y-3">
         {/* Status */}
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">Estado:</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Estado:</span>
           {isAdmin ? (
             <select
               value={room.status}
@@ -72,27 +72,27 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
 
         {/* Info */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-gray-700">
+          <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-gray-500" />
+              <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <span className="text-sm">Capacidad:</span>
             </div>
             <span className="font-semibold">{room.capacity} personas</span>
           </div>
 
-          <div className="flex items-center justify-between text-gray-700">
+          <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
             <div className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-gray-500" />
+              <DollarSign className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <span className="text-sm">Precio:</span>
             </div>
-            <span className="font-semibold text-green-600">${room.price}/noche</span>
+            <span className="font-semibold text-green-600 dark:text-green-400">${room.price}/noche</span>
           </div>
         </div>
 
         {/* Amenities */}
         {room.amenities && room.amenities.length > 0 && (
-          <div className="pt-2 border-t">
-            <p className="text-xs text-gray-600 mb-2">Servicios:</p>
+          <div className="pt-2 border-t dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Servicios:</p>
             <div className="flex flex-wrap gap-1">
               {room.amenities.slice(0, 3).map((amenity, index) => {
                 const icon = getAmenityIcon(amenity);
@@ -100,14 +100,14 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
                 return (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded"
+                    className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded"
                   >
                     {icon} {label}
                   </span>
                 );
               })}
               {room.amenities.length > 3 && (
-                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded">
                   +{room.amenities.length - 3}
                 </span>
               )}
@@ -117,19 +117,19 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
 
         {/* Description */}
         {room.description && (
-          <div className="pt-2 border-t">
-            <p className="text-xs text-gray-600 line-clamp-2">{room.description}</p>
+          <div className="pt-2 border-t dark:border-gray-700">
+            <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{room.description}</p>
           </div>
         )}
 
         {/* Actions */}
         {/* Botón de servicios y extensión para admin Y empleado */}
         {(isAdmin || userRole === 'empleado') && room.status === 'ocupada' && (
-          <div className="flex gap-2 pt-3 border-t">
+          <div className="flex gap-2 pt-3 border-t dark:border-gray-700">
             {onAddServices && (
               <button
                 onClick={() => onAddServices(room)}
-                className="flex-1 flex items-center justify-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 px-4 py-2 rounded-lg transition-colors"
                 title="Agregar servicios extras"
               >
                 <Plus className="w-4 h-4" />
@@ -139,7 +139,7 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
             {onExtendStay && (
               <button
                 onClick={() => onExtendStay(room)}
-                className="flex-1 flex items-center justify-center gap-2 bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-lg transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-lg transition-colors"
                 title="Extender estadía"
               >
                 <Calendar className="w-4 h-4" />
@@ -151,17 +151,17 @@ const RoomCard = ({ room, onEdit, onDelete, onStatusChange, onAddServices, onExt
         
         {/* Botones de admin (editar/eliminar) */}
         {isAdmin && (
-          <div className="flex gap-2 pt-3 border-t">
+          <div className="flex gap-2 pt-3 border-t dark:border-gray-700">
             <button
               onClick={() => onEdit(room)}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-lg transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-lg transition-colors"
             >
               <Edit className="w-4 h-4" />
               <span className="text-sm font-medium">Editar</span>
             </button>
             <button
               onClick={() => onDelete(room._id)}
-              className="flex-1 flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 px-4 py-2 rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4" />
               <span className="text-sm font-medium">Eliminar</span>

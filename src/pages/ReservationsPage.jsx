@@ -166,7 +166,7 @@ const ReservationsPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-800">Gestión de Reservas</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Gestión de Reservas</h2>
         <Button onClick={() => setShowModal(true)} className="w-full sm:w-auto px-6 py-3 shadow-lg">
           + Nueva Reserva
         </Button>
@@ -174,9 +174,9 @@ const ReservationsPage = () => {
 
       {/* Mensaje informativo para empleados */}
       {user.role === 'empleado' && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
-          <Lock className="w-5 h-5 text-blue-700 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-700">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 flex items-start gap-3">
+          <Lock className="w-5 h-5 text-blue-700 dark:text-blue-300 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-700 dark:text-blue-300">
             <p className="font-medium">Permisos de empleado</p>
             <p className="mt-1">Puedes crear y gestionar reservas, pero solo los administradores pueden eliminarlas.</p>
           </div>
