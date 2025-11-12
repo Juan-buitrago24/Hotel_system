@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Hotel, Plus, Users, Bed, Calendar, TrendingUp, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Hotel, Plus, Users, Bed, Calendar, TrendingUp, Edit, Trash2, CheckCircle, XCircle, Search, Filter, Download, Eye, DollarSign, Star } from 'lucide-react';
 import Button from '../components/Button';
 import RegisterHotelModal from '../components/RegisterHotelModal';
 import { useAuth } from '../context/AuthContext';
@@ -10,12 +10,47 @@ const HotelsManagementPage = () => {
   const { user } = useAuth();
   const toast = useToast();
   const [hotels, setHotels] = useState([]);
+  const [filteredHotels, setFilteredHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [newPlan, setNewPlan] = useState('');
+  
+  // Filtros
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterPlan, setFilterPlan] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
     fetchHotels();
   }, []);
+
+  useEffect(() => {
+    // Aplicar filtros
+    let result = hotels;
+    
+    // Filtro de búsqueda
+    if (searchTerm) {
+      result = result.filter(hotel =>
+        hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hotel.slug.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filtro de plan
+    if (filterPlan !== 'all') {
+      result = result.filter(hotel => hotel.plan === filterPlan);
+    }
+    
+    // Filtro de estado
+    if (filterStatus !== 'all') {
+      result = result.filter(hotel => hotel.active === (filterStatus === 'active'));
+    }
+    
+    setFilteredHotels(result);
+  }, [hotels, searchTerm, filterPlan, filterStatus]);
 
   const fetchHotels = async () => {
     try {
@@ -69,6 +104,72 @@ const HotelsManagementPage = () => {
     }
   };
 
+  const handleChangePlan = (hotel) => {
+    setSelectedHotel(hotel);
+    setNewPlan(hotel.plan);
+    setShowPlanModal(true);
+  };
+
+  const handleUpdatePlan = async () => {
+    if (!selectedHotel || !newPlan) return;
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${API_URL}/hotels/${selectedHotel.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ plan: newPlan })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar el plan');
+      }
+
+      toast.success('Plan actualizado exitosamente');
+      setShowPlanModal(false);
+      setSelectedHotel(null);
+      fetchHotels();
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al actualizar el plan: ' + error.message);
+    }
+  };
+
+  const handleExportCSV = () => {
+    const csvData = [
+      ['Nombre', 'Slug', 'Plan', 'Activo', 'Habitaciones', 'Reservas', 'Empleados', 'Email', 'Teléfono', 'Fecha Creación'],
+      ...filteredHotels.map(h => [
+        h.name,
+        h.slug,
+        h.plan,
+        h.active ? 'Sí' : 'No',
+        h.stats?.rooms || 0,
+        h.stats?.reservations || 0,
+        h.stats?.employees || 0,
+        h.contact?.email || '',
+        h.contact?.phone || '',
+        new Date(h.createdAt).toLocaleDateString('es-ES')
+      ])
+    ];
+
+    const csv = csvData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hoteles-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    toast.success('Datos exportados exitosamente');
+  };
+
+  const handleViewDetails = (hotel) => {
+    setSelectedHotel(hotel);
+    setShowDetailsModal(true);
+  };
+
   const getPlanBadge = (plan) => {
     const plans = {
       free: { label: 'Gratuito', color: 'bg-gray-100 text-gray-800' },
@@ -114,15 +215,72 @@ const HotelsManagementPage = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold text-gray-800">Gestión de Hoteles</h2>
-          <p className="text-gray-600 mt-1">Total: {hotels.length} hoteles registrados</p>
+          <p className="text-gray-600 mt-1">Total: {filteredHotels.length} de {hotels.length} hoteles</p>
         </div>
-        <Button
-          onClick={() => setShowModal(true)}
-          className="w-full sm:w-auto px-6 py-3 shadow-lg"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Nuevo Hotel
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleExportCSV}
+            variant="secondary"
+            className="px-4 py-2"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Exportar CSV
+          </Button>
+          <Button
+            onClick={() => setShowModal(true)}
+            className="px-6 py-3 shadow-lg"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Nuevo Hotel
+          </Button>
+        </div>
+      </div>
+
+      {/* Filtros y Búsqueda */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Búsqueda */}
+          <div className="md:col-span-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Buscar por nombre o slug..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Filtro de Plan */}
+          <div>
+            <select
+              value={filterPlan}
+              onChange={(e) => setFilterPlan(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">Todos los planes</option>
+              <option value="free">Gratuito</option>
+              <option value="basic">Básico</option>
+              <option value="premium">Premium</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+          </div>
+
+          {/* Filtro de Estado */}
+          <div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">Todos los estados</option>
+              <option value="active">Activos</option>
+              <option value="inactive">Inactivos</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Estadísticas Globales */}
@@ -153,19 +311,25 @@ const HotelsManagementPage = () => {
       </div>
 
       {/* Lista de Hoteles */}
-      {hotels.length === 0 ? (
+      {filteredHotels.length === 0 ? (
         <div className="bg-white rounded-xl shadow-md p-12 text-center">
           <Hotel className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay hoteles registrados</h3>
-          <p className="text-gray-500 mb-6">Comienza creando tu primer hotel</p>
-          <Button onClick={() => setShowModal(true)}>
-            <Plus className="w-5 h-5 mr-2" />
-            Crear Primer Hotel
-          </Button>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            {hotels.length === 0 ? 'No hay hoteles registrados' : 'No se encontraron hoteles'}
+          </h3>
+          <p className="text-gray-500 mb-6">
+            {hotels.length === 0 ? 'Comienza creando tu primer hotel' : 'Intenta con otros filtros de búsqueda'}
+          </p>
+          {hotels.length === 0 && (
+            <Button onClick={() => setShowModal(true)}>
+              <Plus className="w-5 h-5 mr-2" />
+              Crear Primer Hotel
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {hotels.map((hotel) => (
+          {filteredHotels.map((hotel) => (
             <div
               key={hotel.id}
               className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow p-6"
@@ -183,7 +347,9 @@ const HotelsManagementPage = () => {
                   </div>
                   <p className="text-sm text-gray-500">Slug: {hotel.slug}</p>
                 </div>
-                {getPlanBadge(hotel.plan)}
+                <div className="cursor-pointer" onClick={() => handleChangePlan(hotel)}>
+                  {getPlanBadge(hotel.plan)}
+                </div>
               </div>
 
               {/* Información de Contacto */}
@@ -226,6 +392,13 @@ const HotelsManagementPage = () => {
               {/* Acciones */}
               <div className="flex gap-2">
                 <button
+                  onClick={() => handleViewDetails(hotel)}
+                  className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                  title="Ver detalles"
+                >
+                  <Eye className="w-5 h-5" />
+                </button>
+                <button
                   onClick={() => handleToggleActive(hotel.id, hotel.active)}
                   className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                     hotel.active
@@ -236,10 +409,11 @@ const HotelsManagementPage = () => {
                   {hotel.active ? 'Desactivar' : 'Activar'}
                 </button>
                 <button
-                  className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
-                  title="Editar hotel"
+                  onClick={() => handleChangePlan(hotel)}
+                  className="px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
+                  title="Cambiar plan"
                 >
-                  <Edit className="w-5 h-5" />
+                  <Star className="w-5 h-5" />
                 </button>
               </div>
 
@@ -258,6 +432,222 @@ const HotelsManagementPage = () => {
         onClose={() => setShowModal(false)}
         onSuccess={fetchHotels}
       />
+
+      {/* Modal de Cambio de Plan */}
+      {showPlanModal && selectedHotel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Cambiar Plan - {selectedHotel.name}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Plan actual: <span className="font-semibold">{selectedHotel.plan}</span>
+            </p>
+
+            <div className="space-y-3 mb-6">
+              {['free', 'basic', 'premium', 'enterprise'].map((plan) => (
+                <label
+                  key={plan}
+                  className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    newPlan === plan
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="plan"
+                    value={plan}
+                    checked={newPlan === plan}
+                    onChange={(e) => setNewPlan(e.target.value)}
+                    className="mr-3"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      {getPlanBadge(plan)}
+                      {plan === 'enterprise' && (
+                        <span className="text-xs text-yellow-600 font-semibold">Recomendado</span>
+                      )}
+                    </div>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowPlanModal(false);
+                  setSelectedHotel(null);
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleUpdatePlan}
+                disabled={newPlan === selectedHotel.plan}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Actualizar Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Detalles */}
+      {showDetailsModal && selectedHotel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 my-8">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  {selectedHotel.name}
+                </h3>
+                {getPlanBadge(selectedHotel.plan)}
+              </div>
+              <button
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  setSelectedHotel(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Información Básica */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-700 mb-3">Información Básica</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-600">Slug:</span>
+                    <p className="font-medium">{selectedHotel.slug}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Estado:</span>
+                    <p className="font-medium">
+                      {selectedHotel.active ? (
+                        <span className="text-green-600">✓ Activo</span>
+                      ) : (
+                        <span className="text-red-600">✗ Inactivo</span>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Fecha de Registro:</span>
+                    <p className="font-medium">
+                      {new Date(selectedHotel.createdAt).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">ID:</span>
+                    <p className="font-medium text-xs">{selectedHotel.id}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contacto */}
+              {selectedHotel.contact && (
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-700 mb-3">Contacto</h4>
+                  <div className="space-y-2 text-sm">
+                    {selectedHotel.contact.email && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Email:</span>
+                        <a
+                          href={`mailto:${selectedHotel.contact.email}`}
+                          className="text-blue-600 hover:underline"
+                        >
+                          {selectedHotel.contact.email}
+                        </a>
+                      </div>
+                    )}
+                    {selectedHotel.contact.phone && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Teléfono:</span>
+                        <a
+                          href={`tel:${selectedHotel.contact.phone}`}
+                          className="text-blue-600 hover:underline"
+                        >
+                          {selectedHotel.contact.phone}
+                        </a>
+                      </div>
+                    )}
+                    {selectedHotel.contact.address && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Dirección:</span>
+                        <p>{selectedHotel.contact.address}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Estadísticas Detalladas */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-700 mb-3">Estadísticas</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-3 bg-white rounded-lg">
+                    <Bed className="w-6 h-6 text-blue-600 mx-auto mb-1" />
+                    <p className="text-2xl font-bold text-gray-800">
+                      {selectedHotel.stats?.rooms || 0}
+                    </p>
+                    <p className="text-xs text-gray-600">Habitaciones</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg">
+                    <Calendar className="w-6 h-6 text-purple-600 mx-auto mb-1" />
+                    <p className="text-2xl font-bold text-gray-800">
+                      {selectedHotel.stats?.reservations || 0}
+                    </p>
+                    <p className="text-xs text-gray-600">Reservas</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg">
+                    <Users className="w-6 h-6 text-green-600 mx-auto mb-1" />
+                    <p className="text-2xl font-bold text-gray-800">
+                      {selectedHotel.stats?.employees || 0}
+                    </p>
+                    <p className="text-xs text-gray-600">Empleados</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Acciones Rápidas */}
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => {
+                    setShowDetailsModal(false);
+                    handleChangePlan(selectedHotel);
+                  }}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Cambiar Plan
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDetailsModal(false);
+                    handleToggleActive(selectedHotel.id, selectedHotel.active);
+                  }}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    selectedHotel.active
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  {selectedHotel.active ? 'Desactivar' : 'Activar'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
