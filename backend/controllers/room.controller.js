@@ -43,18 +43,32 @@ export const createRoom = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Errores de validación:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const roomExists = await Room.findOne({ number: req.body.number });
+    console.log('📝 Creando habitación con datos:', {
+      number: req.body.number,
+      hotel: req.body.hotel,
+      type: req.body.type
+    });
+
+    // Verificar que el número de habitación no exista en ESTE hotel
+    const roomExists = await Room.findOne({ 
+      number: req.body.number,
+      hotel: req.body.hotel 
+    });
+    
     if (roomExists) {
-      return res.status(400).json({ message: 'Ya existe una habitación con ese número' });
+      console.log('⚠️ Ya existe habitación:', roomExists.number, 'en hotel:', roomExists.hotel);
+      return res.status(400).json({ message: 'Ya existe una habitación con ese número en este hotel' });
     }
 
     const room = await Room.create(req.body);
+    console.log('✅ Habitación creada exitosamente:', room.number);
     res.status(201).json(room);
   } catch (error) {
-    console.error(error);
+    console.error('❌ Error al crear habitación:', error);
     res.status(500).json({ message: 'Error al crear la habitación' });
   }
 };

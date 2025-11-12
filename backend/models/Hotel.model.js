@@ -43,7 +43,7 @@ const hotelSchema = new mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: ['free', 'basic', 'premium', 'enterprise'],
+    enum: ['free', 'basic', 'professional', 'premium', 'enterprise'],
     default: 'free'
   },
   contact: {

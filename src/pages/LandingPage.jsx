@@ -33,8 +33,79 @@ const LandingPage = ({ onNavigate }) => {
   const [scrolled, setScrolled] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [showReservationModal, setShowReservationModal] = useState(false);
-  const [plans, setPlans] = useState([]);
-  const [loadingPlans, setLoadingPlans] = useState(true);
+  
+  // Planes por defecto (fallback si la API falla)
+  const defaultPlans = [
+    {
+      name: 'Gratuito',
+      price: 0,
+      description: 'Prueba sin compromiso',
+      features: [
+        'Hasta 10 habitaciones',
+        'Registro de reservas',
+        'Panel de control básico',
+        'Control de disponibilidad',
+        'Soporte por email',
+        'Sin tarjeta de crédito'
+      ],
+      color: 'from-gray-500 to-gray-600',
+      popular: false
+    },
+    {
+      name: 'Básico',
+      price: 29,
+      description: 'Ideal para empezar',
+      features: [
+        'Hasta 10 habitaciones',
+        'Gestión completa de reservas',
+        'Galería de fotos ilimitada',
+        'Panel administrativo',
+        'Calendario de disponibilidad',
+        'Reportes básicos',
+        'Soporte por email'
+      ],
+      color: 'from-blue-500 to-blue-600',
+      popular: false
+    },
+    {
+      name: 'Profesional',
+      price: 79,
+      description: 'Para hoteles en crecimiento',
+      features: [
+        'Hasta 100 habitaciones',
+        'Todo lo del plan Básico',
+        'Gestión de equipo (hasta 20 usuarios)',
+        'Control de permisos por rol',
+        'Estadísticas avanzadas',
+        'Múltiples recepcionistas',
+        'Soporte prioritario',
+        'Personalización avanzada'
+      ],
+      color: 'from-purple-500 to-pink-500',
+      popular: true
+    },
+    {
+      name: 'Enterprise',
+      price: 199,
+      description: 'Para cadenas hoteleras',
+      features: [
+        'Habitaciones ilimitadas',
+        'Todo lo del plan Profesional',
+        'Gestión de múltiples propiedades',
+        'Reportes y análisis empresarial',
+        'Equipo ilimitado',
+        'Integración con otros sistemas',
+        'Capacitación personalizada',
+        'Soporte dedicado 24/7',
+        'Gerente de cuenta asignado'
+      ],
+      color: 'from-orange-500 to-red-500',
+      popular: false
+    }
+  ];
+  
+  const [plans, setPlans] = useState(defaultPlans);
+  const [loadingPlans, setLoadingPlans] = useState(false);
 
   // Detectar scroll para navbar
   useEffect(() => {
@@ -172,57 +243,6 @@ const LandingPage = ({ onNavigate }) => {
       rating: 5,
       comment: 'Excelente ubicación y comodidades. El WiFi rápido fue perfecto para mi trabajo remoto.',
       avatar: 'https://ui-avatars.com/api/?name=Juan+Perez&background=10B981&color=fff'
-    }
-  ];
-
-  // Planes por defecto (fallback si la API falla)
-  const defaultPlans = [
-    {
-      name: 'Básico',
-      price: 29,
-      description: 'Perfecto para hoteles pequeños',
-      features: [
-        'Hasta 20 habitaciones',
-        'Gestión de reservas básica',
-        'Dashboard administrativo',
-        'Gestión de disponibilidad',
-        'Soporte por email'
-      ],
-      color: 'from-blue-500 to-blue-600',
-      popular: false
-    },
-    {
-      name: 'Profesional',
-      price: 79,
-      description: 'Ideal para hoteles medianos',
-      features: [
-        'Hasta 100 habitaciones',
-        'Gestión completa de reservas',
-        'Galería de imágenes con Cloudinary',
-        'Control de usuarios y roles',
-        'Calendario de disponibilidad',
-        'Sistema de autenticación',
-        'Soporte prioritario'
-      ],
-      color: 'from-purple-500 to-pink-500',
-      popular: true
-    },
-    {
-      name: 'Enterprise',
-      price: 199,
-      description: 'Para cadenas hoteleras',
-      features: [
-        'Habitaciones ilimitadas',
-        'Multi-hotel management',
-        'Reportes y estadísticas avanzadas',
-        'API REST completa',
-        'Múltiples administradores',
-        'Base de datos MongoDB escalable',
-        'Integración personalizada',
-        'Soporte dedicado 24/7'
-      ],
-      color: 'from-orange-500 to-red-500',
-      popular: false
     }
   ];
 
@@ -721,7 +741,7 @@ const LandingPage = ({ onNavigate }) => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
                 {plans.map((plan, index) => (
                   <div 
                     key={plan._id || index}

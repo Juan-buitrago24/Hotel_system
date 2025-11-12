@@ -8,12 +8,16 @@ import {
 } from '../controllers/image.controller.js';
 import { upload } from '../config/cloudinary.js';
 import { protect, adminOnly } from '../middleware/auth.middleware.js';
+import { checkPlanFeature } from '../middleware/checkPlanLimits.middleware.js';
 
 const router = express.Router();
 
 // Todas las rutas requieren autenticación de admin
 router.use(protect);
 router.use(adminOnly);
+
+// Verificar que el plan tenga acceso a Cloudinary (Professional+)
+router.use(checkPlanFeature('cloudinary'));
 
 // Obtener imágenes de una habitación
 router.get('/:roomId', getRoomImages);

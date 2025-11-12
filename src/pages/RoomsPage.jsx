@@ -7,11 +7,12 @@ import AddServicesModal from '../components/AddServicesModal';
 import ExtendStayModal from '../components/ExtendStayModal';
 import Button from '../components/Button';
 import RoleGuard, { useRole } from '../components/RoleGuard';
-import { Plus, Filter, Lock } from 'lucide-react';
+import { Plus, Filter, Lock, AlertCircle } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { SkeletonGrid } from '../components/SkeletonLoader';
 import { ROOM_AMENITIES } from '../constants/amenities';
 import { getAmenityIcon, getAmenityLabel } from '../utils/amenitiesHelper';
+import { getPlanInfo, hasReachedRoomLimit } from '../utils/helpers';
 
 const RoomsPage = () => {
   const { user } = useAuth();
@@ -91,10 +92,13 @@ const RoomsPage = () => {
 
   const handleCreateOrUpdate = async (roomData) => {
     try {
+      console.log('📤 Enviando datos de habitación:', roomData);
+      
       if (editingRoom) {
         await roomsAPI.update(editingRoom._id, roomData);
         toast.success('Habitación actualizada exitosamente');
       } else {
+        // El middleware assignHotel del backend asignará automáticamente el hotel
         await roomsAPI.create(roomData);
         toast.success('Habitación creada exitosamente');
       }
@@ -102,8 +106,13 @@ const RoomsPage = () => {
       setShowModal(false);
       setEditingRoom(null);
     } catch (error) {
-      console.error('Error al guardar habitación:', error);
-      const message = error.response?.data?.message || 'Error al guardar la habitación';
+      console.error('❌ Error completo:', error);
+      console.error('📋 Response data:', error.response?.data);
+      console.error('📊 Response status:', error.response?.status);
+      
+      const message = error.response?.data?.message || 
+                      error.response?.data?.errors?.[0]?.msg ||
+                      'Error al guardar la habitación';
       toast.error(message);
     }
   };
@@ -285,27 +294,52 @@ const RoomsPage = () => {
     );
   }
 
+  // Obtener información del plan del hotel
+  const hotelPlan = user?.hotel?.plan || 'free';
+  const planInfo = getPlanInfo(hotelPlan);
+  const hasReachedLimit = hasReachedRoomLimit(hotelPlan, rooms.length);
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Gestión de Habitaciones</h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Total: {rooms.length} habitaciones</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Total: {rooms.length} de {planInfo.maxRooms === Infinity ? '∞' : planInfo.maxRooms} habitaciones
+            <span className="ml-2 text-sm px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
+              Plan {planInfo.displayName}
+            </span>
+          </p>
         </div>
         
         {/* Botón para admin y hotel_admin */}
         {(user?.role === 'admin' || user?.role === 'hotel_admin' || user?.role === 'admin_global') && (
-          <Button 
-            onClick={() => {
-              setEditingRoom(null);
-              setShowModal(true);
-            }} 
-            className="w-full sm:w-auto px-6 py-3 shadow-lg"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Nueva Habitación
-          </Button>
+          <div className="w-full sm:w-auto">
+            <Button 
+              onClick={() => {
+                setEditingRoom(null);
+                setShowModal(true);
+              }} 
+              disabled={hasReachedLimit}
+              className="w-full sm:w-auto px-6 py-3 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Nueva Habitación
+            </Button>
+            {hasReachedLimit && (
+              <div className="mt-2 bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 rounded-lg p-3 text-sm text-orange-700 dark:text-orange-300 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold">Has alcanzado el límite de habitaciones</p>
+                  <p className="text-xs mt-1">
+                    Tu plan {planInfo.displayName} permite hasta {planInfo.maxRooms} habitaciones. 
+                    Actualiza tu plan para crear más.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Mensaje para empleados */}

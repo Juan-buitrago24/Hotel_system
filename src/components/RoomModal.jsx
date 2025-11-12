@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, Image } from 'lucide-react';
+import { X, Settings, Image, Crown } from 'lucide-react';
 import Button from './Button';
 import InputField from './InputField';
 import ImageUploader from './ImageUploader';
 import { ROOM_AMENITIES } from '../constants/amenities';
+import { useAuth } from '../context/AuthContext';
+import { hasPlanFeature } from '../utils/helpers';
 
 const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('details');
   const [formData, setFormData] = useState({
     number: '',
@@ -17,6 +20,9 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
     amenities: [],
     description: ''
   });
+
+  // Verificar si el plan tiene acceso a Cloudinary
+  const hasCloudinaryAccess = hasPlanFeature(user?.hotel?.plan, 'cloudinary');
 
   useEffect(() => {
     if (room) {
@@ -108,14 +114,16 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
               </button>
               <button
                 onClick={() => setActiveTab('images')}
+                disabled={!hasCloudinaryAccess}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                   activeTab === 'images'
                     ? 'bg-white text-blue-600 font-semibold'
                     : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
-                }`}
+                } ${!hasCloudinaryAccess ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Image className="w-4 h-4" />
                 Imágenes {room.images?.length > 0 && `(${room.images.length})`}
+                {!hasCloudinaryAccess && <Crown className="w-3 h-3 text-yellow-400 ml-1" />}
               </button>
             </div>
           )}
@@ -276,17 +284,52 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
 
           {/* Pestaña de Imágenes */}
           {activeTab === 'images' && room && room._id && (
-            <ImageUploader
-              roomId={room._id}
-              images={room.images || []}
-              onImagesUpdated={() => {
-                // Recargar la habitación para obtener las imágenes actualizadas
-                if (onSubmit) {
-                  // Esto forzará un refresh en el componente padre
-                  onClose();
-                }
-              }}
-            />
+            <>
+              {hasCloudinaryAccess ? (
+                <ImageUploader
+                  roomId={room._id}
+                  images={room.images || []}
+                  onImagesUpdated={() => {
+                    // Recargar la habitación para obtener las imágenes actualizadas
+                    if (onSubmit) {
+                      // Esto forzará un refresh en el componente padre
+                      onClose();
+                    }
+                  }}
+                />
+              ) : (
+                <div className="text-center py-12 px-4">
+                  <div className="inline-block p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mb-4">
+                    <Crown className="w-12 h-12 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    Galería de Fotos Profesional
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Muestra tu hotel con fotos de alta calidad. Disponible desde el <span className="font-semibold text-blue-600">Plan Básico</span>.
+                  </p>
+                  <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      <strong>Con el Plan Básico obtienes:</strong>
+                    </p>
+                    <ul className="text-left text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
+                      <li>✅ Hasta 10 habitaciones</li>
+                      <li>✅ Galería de fotos ilimitada</li>
+                      <li>✅ Almacenamiento profesional</li>
+                      <li>✅ Optimización automática</li>
+                      <li>✅ Gestión completa de reservas</li>
+                      <li>✅ Panel administrativo</li>
+                    </ul>
+                  </div>
+                  <Button 
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                    onClick={() => window.open('mailto:support@hotelsystem.com?subject=Actualizar Plan', '_blank')}
+                  >
+                    Actualizar a Plan Básico - $29/mes
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

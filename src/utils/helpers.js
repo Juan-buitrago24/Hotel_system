@@ -32,3 +32,90 @@ export const getStatusColor = (status) => {
   return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300';
 };
 
+// Características disponibles por plan
+export const PLAN_FEATURES = {
+  free: {
+    maxRooms: 10,
+    maxUsers: 3,
+    cloudinary: false,
+    advancedCalendar: false,
+    userRoles: false,
+    reports: false,
+    multiHotel: false,
+    apiAccess: false,
+    displayName: 'Free',
+    price: 0
+  },
+  basic: {
+    maxRooms: 10,
+    maxUsers: 5,
+    cloudinary: true, // ✅ Básico SÍ tiene Cloudinary
+    advancedCalendar: false,
+    userRoles: false,
+    reports: false,
+    multiHotel: false,
+    apiAccess: false,
+    displayName: 'Básico',
+    price: 29
+  },
+  professional: {
+    maxRooms: 100,
+    maxUsers: 20,
+    cloudinary: true,
+    advancedCalendar: true,
+    userRoles: true,
+    reports: false,
+    multiHotel: false,
+    apiAccess: false,
+    displayName: 'Profesional',
+    price: 79
+  },
+  premium: {
+    maxRooms: 100,
+    maxUsers: 20,
+    cloudinary: true,
+    advancedCalendar: true,
+    userRoles: true,
+    reports: false,
+    multiHotel: false,
+    apiAccess: false,
+    displayName: 'Premium',
+    price: 79
+  },
+  enterprise: {
+    maxRooms: Infinity,
+    maxUsers: Infinity,
+    cloudinary: true,
+    advancedCalendar: true,
+    userRoles: true,
+    reports: true,
+    multiHotel: true,
+    apiAccess: true,
+    displayName: 'Enterprise',
+    price: 199
+  }
+};
+
+// Verificar si el plan tiene una característica específica
+export const hasPlanFeature = (planName, feature) => {
+  const plan = PLAN_FEATURES[planName?.toLowerCase()] || PLAN_FEATURES.free;
+  return plan[feature] || false;
+};
+
+// Obtener información del plan
+export const getPlanInfo = (planName) => {
+  return PLAN_FEATURES[planName?.toLowerCase()] || PLAN_FEATURES.free;
+};
+
+// Verificar si el usuario ha alcanzado el límite de habitaciones
+export const hasReachedRoomLimit = (planName, currentRooms) => {
+  const plan = PLAN_FEATURES[planName?.toLowerCase()] || PLAN_FEATURES.free;
+  return currentRooms >= plan.maxRooms;
+};
+
+// Verificar si el usuario ha alcanzado el límite de usuarios
+export const hasReachedUserLimit = (planName, currentUsers) => {
+  const plan = PLAN_FEATURES[planName?.toLowerCase()] || PLAN_FEATURES.free;
+  return currentUsers >= plan.maxUsers;
+};
+
