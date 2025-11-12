@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Hotel, User, Lock, Loader } from 'lucide-react'
+import { Hotel, User, Lock, Loader, ArrowLeft } from 'lucide-react'
 import InputField from './InputField'
 import Button from './Button'
 import { authAPI } from '../services/api'
 import { useToast } from '../context/ToastContext'
 
-const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword }) => {
+const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword, onBackToLanding }) => {
   const toast = useToast();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -38,6 +38,17 @@ const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        {/* Botón volver al inicio */}
+        {onBackToLanding && (
+          <button
+            onClick={onBackToLanding}
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Volver al inicio
+          </button>
+        )}
+        
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
             <img 
@@ -104,11 +115,6 @@ const LoginPage = ({ onLogin, onShowRegister, onShowForgotPassword }) => {
               </button>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600 font-semibold mb-2">💡 Nota:</p>
-          <p className="text-xs text-gray-600">Asegúrate de que el backend esté corriendo en el puerto 5000</p>
         </div>
       </div>
     </div>

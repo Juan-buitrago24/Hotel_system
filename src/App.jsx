@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AuthContext from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import ToastContainer from './components/ToastContainer'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './components/LoginPage'
 import RegisterPage from './components/RegisterPage'
 import ForgotPasswordPage from './components/ForgotPasswordPage'
@@ -27,10 +28,10 @@ import { hotelAPI } from './services/api'
 const HotelManagementApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentHotel, setCurrentHotel] = useState(null);
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = useState('landing'); // Cambiar default a 'landing'
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [authView, setAuthView] = useState('login'); // 'login', 'register', 'forgot-password', 'reset-password', 'verify-account'
+  const [authView, setAuthView] = useState('landing'); // Cambiar default a 'landing'
   const [resetToken, setResetToken] = useState('');
   const [verifyToken, setVerifyToken] = useState('');
   const [showProfile, setShowProfile] = useState(false);
@@ -40,7 +41,10 @@ const HotelManagementApp = () => {
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     if (token && savedUser) {
-      setCurrentUser(JSON.parse(savedUser));
+      const user = JSON.parse(savedUser);
+      setCurrentUser(user);
+      // Si el usuario está logueado, ir al dashboard apropiado
+      setCurrentView(user.role === 'client' ? 'client-hotels' : 'dashboard');
     }
 
     // Verificar si hay un token de reset o verify en la URL
@@ -123,6 +127,13 @@ const HotelManagementApp = () => {
     return (
       <ToastProvider>
         <ToastContainer />
+        
+        {/* Landing Page */}
+        {authView === 'landing' && (
+          <LandingPage onNavigate={setAuthView} />
+        )}
+
+        {/* Register */}
         {authView === 'register' && (
           <RegisterPage 
             onRegister={handleLogin}
@@ -130,12 +141,14 @@ const HotelManagementApp = () => {
           />
         )}
 
+        {/* Forgot Password */}
         {authView === 'forgot-password' && (
           <ForgotPasswordPage 
             onBackToLogin={() => setAuthView('login')}
           />
         )}
 
+        {/* Reset Password */}
         {authView === 'reset-password' && resetToken && (
           <ResetPasswordPage 
             token={resetToken}
@@ -143,6 +156,7 @@ const HotelManagementApp = () => {
           />
         )}
 
+        {/* Verify Account */}
         {authView === 'verify-account' && verifyToken && (
           <VerifyAccountPage 
             token={verifyToken}
@@ -151,11 +165,13 @@ const HotelManagementApp = () => {
           />
         )}
 
+        {/* Login */}
         {authView === 'login' && (
           <LoginPage 
             onLogin={handleLogin}
             onShowRegister={() => setAuthView('register')}
             onShowForgotPassword={() => setAuthView('forgot-password')}
+            onBackToLanding={() => setAuthView('landing')}
           />
         )}
       </ToastProvider>
@@ -166,17 +182,20 @@ const HotelManagementApp = () => {
     <ToastProvider>
       <AuthContext.Provider value={{ user: currentUser }}>
         <ToastContainer />
-        <div className="min-h-screen bg-gray-100">
-          <Header 
-            user={currentUser} 
-            onLogout={handleLogout}
-            onShowProfile={() => setShowProfile(true)}
-          />
-          
-          {console.log('App render:', { role: currentUser?.role, currentView })}
-          
-          {/* Vista para CLIENTES */}
-          {currentUser.role === 'cliente' ? (
+
+        {/* Vistas con autenticación */}
+        {currentUser && (
+          <div className="min-h-screen bg-gray-100">
+            <Header 
+              user={currentUser} 
+              onLogout={handleLogout}
+              onShowProfile={() => setShowProfile(true)}
+            />
+            
+            {console.log('App render:', { role: currentUser?.role, currentView })}
+            
+            {/* Vista para CLIENTES */}
+            {currentUser.role === 'cliente' ? (
             <>
               <div className="bg-white shadow-sm border-b">
                 <div className="max-w-7xl mx-auto px-4 lg:px-6">
@@ -272,7 +291,8 @@ const HotelManagementApp = () => {
               onClose={() => setShowProfile(false)}
             />
           )}
-        </div>
+          </div>
+        )}
       </AuthContext.Provider>
     </ToastProvider>
   );
