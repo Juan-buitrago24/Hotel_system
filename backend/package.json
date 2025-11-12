@@ -9,7 +9,8 @@
     "dev": "nodemon server.js",
     "delete-users": "node delete-users.js",
     "delete-email": "node delete-by-email.js",
-    "test-resend": "node test-resend.js"
+    "test-resend": "node test-resend.js",
+    "seed:plans": "node seed-plans.js"
   },
   "keywords": [
     "hotel",

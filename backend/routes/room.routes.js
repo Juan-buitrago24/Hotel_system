@@ -10,6 +10,7 @@ import {
 } from '../controllers/room.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { filterByHotel, assignHotel } from '../middleware/hotel.middleware.js';
+import { checkRoomLimit } from '../middleware/checkPlanLimits.middleware.js';
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.use(filterByHotel); // Aplicar filtro de hotel
 
 router.route('/')
   .get(getRooms)
-  .post(authorize('hotel_admin', 'admin_global'), assignHotel, [
+  .post(authorize('hotel_admin', 'admin_global'), checkRoomLimit, assignHotel, [
     body('number').trim().notEmpty().withMessage('El número de habitación es requerido'),
     body('type').isIn(['simple', 'doble', 'suite', 'familiar']).withMessage('Tipo de habitación inválido'),
     body('capacity').isInt({ min: 1 }).withMessage('La capacidad debe ser al menos 1'),

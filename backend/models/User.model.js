@@ -61,6 +61,25 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordExpires: {
     type: Date
+  },
+  // Campos de suscripción al plan
+  plan: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Plan',
+    default: null
+  },
+  subscriptionDate: {
+    type: Date,
+    default: null
+  },
+  subscriptionStatus: {
+    type: String,
+    enum: ['trial', 'active', 'inactive', 'cancelled'],
+    default: 'trial'
+  },
+  subscriptionExpiresAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true
