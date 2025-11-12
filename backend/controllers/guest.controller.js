@@ -39,24 +39,37 @@ export const getGuest = async (req, res) => {
 // Crear nuevo huésped
 export const createGuest = async (req, res) => {
   try {
-    const { firstName, lastName, documentType, documentNumber, email, phone, ...otherData } = req.body;
+    const { firstName, lastName, documentType, documentNumber, email, phone, hotel, ...otherData } = req.body;
     
     // Validar campos requeridos
     if (!firstName || !lastName || !documentType || !documentNumber || !phone) {
       return res.status(400).json({ message: 'Faltan campos requeridos' });
     }
     
+    // Determinar el hotel: usar el del body (clientes) o el del usuario (empleados/admins)
+    let hotelId = hotel;
+    
+    // Si el usuario tiene hotel asignado (empleado/admin), usar ese
+    if (req.user && req.user.hotel) {
+      hotelId = req.user.hotel;
+    }
+    
+    // Si aún no tenemos hotel, es un error
+    if (!hotelId) {
+      return res.status(400).json({ message: 'Debe especificar un hotel' });
+    }
+    
     // Verificar si ya existe un huésped con ese documento en este hotel
     const existingGuest = await Guest.findOne({ 
       documentNumber,
-      hotel: req.user.hotel 
+      hotel: hotelId 
     });
     
     if (existingGuest) {
       return res.status(400).json({ message: 'Ya existe un huésped con ese número de documento en este hotel' });
     }
     
-    // Crear el huésped asignando el hotel del usuario
+    // Crear el huésped
     const guestData = {
       firstName,
       lastName,
@@ -65,7 +78,7 @@ export const createGuest = async (req, res) => {
       email,
       phone,
       ...otherData,
-      hotel: req.user.hotel
+      hotel: hotelId
     };
     
     const guest = await Guest.create(guestData);
@@ -76,7 +89,7 @@ export const createGuest = async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({ message: 'El número de documento ya está registrado' });
     }
-    res.status(500).json({ message: 'Error al crear el huésped' });
+    res.status(500).json({ message: 'Error al crear el huésped', error: error.message });
   }
 };
 

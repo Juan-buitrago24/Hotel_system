@@ -116,29 +116,27 @@ const LandingPage = ({ onNavigate }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Cargar planes desde la API
+  // Cargar planes desde la API (opcional - fallback a defaultPlans si falla)
   useEffect(() => {
+    // Comentado: usar defaultPlans directamente para evitar bloqueo de AdBlockers
+    // que detectan "/api/plans" como publicidad
+    /*
     const fetchPlans = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/plans');
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_URL}/api/plans`);
         if (response.ok) {
           const data = await response.json();
           setPlans(data);
-        } else {
-          console.error('Error al cargar planes');
-          // Usar planes por defecto si falla la API
-          setPlans(defaultPlans);
         }
       } catch (error) {
-        console.error('Error al conectar con la API:', error);
-        // Usar planes por defecto si falla la conexión
-        setPlans(defaultPlans);
+        console.log('Usando planes por defecto');
       } finally {
         setLoadingPlans(false);
       }
     };
-
     fetchPlans();
+    */
   }, []);
 
   // Auto-rotate testimonials
