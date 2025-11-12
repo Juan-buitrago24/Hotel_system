@@ -31,7 +31,7 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
   if (!reservation.room) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
           <div className="text-center">
             <p className="text-red-600 font-medium mb-4">Error: No se pudo cargar la información de la habitación</p>
             <Button onClick={onClose} className="bg-gray-500">Cerrar</Button>
@@ -133,7 +133,7 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 flex justify-between items-center">
           <div>
@@ -153,21 +153,21 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
         {/* Body */}
         <div className="p-6 space-y-6">
           {/* Current Reservation Info */}
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div>
-                <p className="text-gray-600">Check-in</p>
-                <p className="font-medium">
+                <p className="text-gray-600 dark:text-gray-400">Check-in</p>
+                <p className="font-medium dark:text-white">
                   {new Date(reservation.checkIn).toLocaleDateString('es-ES')}
                 </p>
               </div>
               <div>
-                <p className="text-gray-600">Check-out Actual</p>
-                <p className="font-medium text-blue-600">{currentCheckOutStr}</p>
+                <p className="text-gray-600 dark:text-gray-400">Check-out Actual</p>
+                <p className="font-medium text-blue-600 dark:text-blue-400">{currentCheckOutStr}</p>
               </div>
               <div>
-                <p className="text-gray-600">Precio Actual</p>
-                <p className="font-medium text-green-600">
+                <p className="text-gray-600 dark:text-gray-400">Precio Actual</p>
+                <p className="font-medium text-green-600 dark:text-green-400">
                   ${(reservation.totalPrice || 0).toLocaleString()}
                 </p>
               </div>
@@ -176,7 +176,7 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
 
           {/* Extension Type Selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Tipo de Extensión
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -184,19 +184,19 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
                 onClick={() => setExtensionType('days')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   extensionType === 'days'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 dark:bg-gray-700'
                 }`}
               >
                 <Calendar className={`w-6 h-6 mx-auto mb-2 ${
-                  extensionType === 'days' ? 'text-blue-600' : 'text-gray-400'
+                  extensionType === 'days' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'
                 }`} />
                 <p className={`font-medium ${
-                  extensionType === 'days' ? 'text-blue-700' : 'text-gray-700'
+                  extensionType === 'days' ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'
                 }`}>
                   Días Adicionales
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Extender noches completas
                 </p>
               </button>
@@ -205,19 +205,19 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
                 onClick={() => setExtensionType('hours')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   extensionType === 'hours'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-400'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 dark:bg-gray-700'
                 }`}
               >
                 <Clock className={`w-6 h-6 mx-auto mb-2 ${
-                  extensionType === 'hours' ? 'text-purple-600' : 'text-gray-400'
+                  extensionType === 'hours' ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400'
                 }`} />
                 <p className={`font-medium ${
-                  extensionType === 'hours' ? 'text-purple-700' : 'text-gray-700'
+                  extensionType === 'hours' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300'
                 }`}>
                   Late Checkout
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Salida tardía por horas
                 </p>
               </button>
@@ -227,7 +227,7 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
           {/* Days Extension Option */}
           {extensionType === 'days' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Nueva Fecha de Salida *
               </label>
               <input
@@ -238,9 +238,9 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
                   setAvailable(null); // Reset availability check
                 }}
                 min={getMinDate()}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Mínimo: {new Date(getMinDate()).toLocaleDateString('es-ES')}
               </p>
             </div>
@@ -249,7 +249,7 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
           {/* Hours Extension Option */}
           {extensionType === 'hours' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Horas Adicionales
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -311,48 +311,48 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
 
           {/* Cost Summary */}
           {extension && (
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
               <div className="flex items-center gap-2 mb-3">
-                <DollarSign className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-gray-900">Resumen de Extensión</h3>
+                <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="font-bold text-gray-900 dark:text-white">Resumen de Extensión</h3>
               </div>
               
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tipo de extensión:</span>
-                  <span className="font-medium">{extension.description}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Tipo de extensión:</span>
+                  <span className="font-medium dark:text-white">{extension.description}</span>
                 </div>
                 
                 {extensionType === 'days' && (
                   <>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Precio por noche:</span>
-                      <span className="font-medium">${(reservation.room?.price || 0).toLocaleString()}</span>
+                      <span className="text-gray-600 dark:text-gray-400">Precio por noche:</span>
+                      <span className="font-medium dark:text-white">${(reservation.room?.price || 0).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Noches adicionales:</span>
-                      <span className="font-medium">{extension.nights}</span>
+                      <span className="text-gray-600 dark:text-gray-400">Noches adicionales:</span>
+                      <span className="font-medium dark:text-white">{extension.nights}</span>
                     </div>
                   </>
                 )}
 
                 {extensionType === 'hours' && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Tarifa por hora:</span>
-                    <span className="font-medium">${Math.round((reservation.room?.price || 0) / 24).toLocaleString()}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Tarifa por hora:</span>
+                    <span className="font-medium dark:text-white">${Math.round((reservation.room?.price || 0) / 24).toLocaleString()}</span>
                   </div>
                 )}
 
-                <div className="border-t pt-2 flex justify-between">
-                  <span className="text-gray-600">Costo adicional:</span>
-                  <span className="font-bold text-lg text-blue-600">
+                <div className="border-t dark:border-gray-600 pt-2 flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Costo adicional:</span>
+                  <span className="font-bold text-lg text-blue-600 dark:text-blue-400">
                     ${extension.cost.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="border-t pt-2 flex justify-between">
-                  <span className="font-medium">Nuevo Total:</span>
-                  <span className="font-bold text-xl text-green-600">
+                <div className="border-t dark:border-gray-600 pt-2 flex justify-between">
+                  <span className="font-medium dark:text-white">Nuevo Total:</span>
+                  <span className="font-bold text-xl text-green-600 dark:text-green-400">
                     ${((reservation.totalPrice || 0) + extension.cost).toLocaleString()}
                   </span>
                 </div>
@@ -362,7 +362,7 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Notas Adicionales (Opcional)
             </label>
             <textarea
@@ -370,13 +370,13 @@ export default function ExtendStayModal({ isOpen, onClose, reservation, onSave }
               onChange={(e) => setAdditionalNotes(e.target.value)}
               rows="3"
               placeholder="Ej: Solicitud del huésped por reunión de trabajo..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none placeholder-gray-400 dark:placeholder-gray-500"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 p-6 border-t bg-gray-50">
+        <div className="flex gap-3 p-6 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
           <Button onClick={onClose} variant="secondary" className="flex-1">
             Cancelar
           </Button>

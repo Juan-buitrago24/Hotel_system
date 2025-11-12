@@ -92,7 +92,7 @@ const RegisterHotelModal = ({ isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white flex justify-between items-center sticky top-0">
           <div className="flex items-center gap-3">
@@ -113,15 +113,15 @@ const RegisterHotelModal = ({ isOpen, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
 
           {/* Información del Hotel */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Building className="w-5 h-5 text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+              <Building className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               Información del Hotel
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -192,9 +192,9 @@ const RegisterHotelModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
 
           {/* Información del Administrador */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <User className="w-5 h-5 text-purple-600" />
+          <div className="border-t dark:border-gray-700 pt-6">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+              <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               Administrador del Hotel
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
