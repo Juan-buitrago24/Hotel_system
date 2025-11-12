@@ -25,8 +25,11 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-  process.env.FRONTEND_URL // URL de Vercel
+  'https://hotelmanager-gilt.vercel.app', // Hardcoded como fallback
+  process.env.FRONTEND_URL // URL de Vercel desde variable de entorno
 ].filter(Boolean);
+
+console.log('🌍 Orígenes permitidos:', allowedOrigins);
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -36,12 +39,13 @@ app.use(cors({
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.log('🚫 CORS blocked origin:', origin);
+      console.log('🚫 CORS bloqueado para origen:', origin);
+      console.log('✅ Orígenes permitidos:', allowedOrigins);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
