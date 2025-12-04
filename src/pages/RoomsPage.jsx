@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { roomsAPI, reservationsAPI } from '../services/api';
+import { roomsAPI, reservationsAPI, hotelAPI } from '../services/api';
 import RoomCard from '../components/RoomCard';
 import RoomModal from '../components/RoomModal';
 import AddServicesModal from '../components/AddServicesModal';
@@ -22,6 +22,7 @@ const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hotel, setHotel] = useState(null); // Hotel completo con plan
   const [showModal, setShowModal] = useState(false);
   const [showServicesModal, setShowServicesModal] = useState(false);
   const [showExtendModal, setShowExtendModal] = useState(false);
@@ -38,6 +39,23 @@ const RoomsPage = () => {
   useEffect(() => {
     fetchRooms();
   }, []);
+
+  useEffect(() => {
+    fetchHotel();
+  }, [user]);
+
+  const fetchHotel = async () => {
+    if (user?.hotel) {
+      try {
+        const response = await hotelAPI.getById(user.hotel);
+        const hotelData = response.data; // Extraer data de la respuesta de axios
+        setHotel(hotelData);
+        console.log('🏨 Hotel cargado con plan:', hotelData?.plan);
+      } catch (error) {
+        console.error('❌ Error cargando hotel:', error);
+      }
+    }
+  };
 
   useEffect(() => {
     applyFilters();
@@ -295,7 +313,7 @@ const RoomsPage = () => {
   }
 
   // Obtener información del plan del hotel
-  const hotelPlan = user?.hotel?.plan || 'free';
+  const hotelPlan = hotel?.plan || 'free';
   const planInfo = getPlanInfo(hotelPlan);
   const hasReachedLimit = hasReachedRoomLimit(hotelPlan, rooms.length);
 
@@ -492,6 +510,7 @@ const RoomsPage = () => {
         }}
         onSubmit={handleCreateOrUpdate}
         room={editingRoom}
+        hotel={hotel}
       />
 
       {/* Modal de Servicios */}

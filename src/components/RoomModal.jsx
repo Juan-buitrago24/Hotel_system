@@ -5,9 +5,9 @@ import InputField from './InputField';
 import ImageUploader from './ImageUploader';
 import { ROOM_AMENITIES } from '../constants/amenities';
 import { useAuth } from '../context/AuthContext';
-import { hasPlanFeature } from '../utils/helpers';
+import { hasPlanFeature, PLAN_FEATURES } from '../utils/helpers';
 
-const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
+const RoomModal = ({ isOpen, onClose, onSubmit, room, hotel }) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('details');
   const [formData, setFormData] = useState({
@@ -22,7 +22,16 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
   });
 
   // Verificar si el plan tiene acceso a Cloudinary
-  const hasCloudinaryAccess = hasPlanFeature(user?.hotel?.plan, 'cloudinary');
+  const hotelPlan = hotel?.plan || user?.hotel?.plan || 'free';
+  const hasCloudinaryAccess = hasPlanFeature(hotelPlan, 'cloudinary');
+  
+  // Debug
+  console.log('🔍 RoomModal - Debug Cloudinary:', {
+    hotelPlan,
+    hotelFromProp: hotel,
+    hasCloudinaryAccess,
+    planFeatures: hotelPlan ? PLAN_FEATURES[hotelPlan] : null
+  });
 
   useEffect(() => {
     if (room) {
@@ -285,6 +294,14 @@ const RoomModal = ({ isOpen, onClose, onSubmit, room }) => {
           {/* Pestaña de Imágenes */}
           {activeTab === 'images' && room && room._id && (
             <>
+              {/* Debug Info */}
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
+                <p className="font-semibold text-yellow-800 mb-1">🔍 Debug Info:</p>
+                <p className="text-yellow-700">Plan del hotel: <strong>{hotelPlan || 'No detectado'}</strong></p>
+                <p className="text-yellow-700">Tiene Cloudinary: <strong>{hasCloudinaryAccess ? 'Sí ✅' : 'No ❌'}</strong></p>
+                <p className="text-yellow-700">Hotel prop: <strong>{hotel ? hotel.name : 'No pasado'}</strong></p>
+              </div>
+
               {hasCloudinaryAccess ? (
                 <ImageUploader
                   roomId={room._id}
